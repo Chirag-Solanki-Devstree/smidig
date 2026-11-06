@@ -1,9 +1,9 @@
 "use client";
 
-import { useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { AnimatePresence, motion } from "motion/react";
-import { AlertTriangle, Check, Eye, Plus, Trash2, Upload } from "lucide-react";
+import { AlertTriangle, CalendarDays, Check, Eye, MapPin, Plus, Trash2, Upload, Users, X } from "lucide-react";
 import { PageTitle } from "@/components/layouts/console-shell";
 import { Badge, Button, Card, Progress } from "@/components/kit";
 import { useToast } from "@/components/kit/toast";
@@ -174,6 +174,7 @@ export function CreateWizard() {
   const [form, setForm] = useState<Form>(BLANK);
   const [errors, setErrors] = useState<Errors>({});
   const [published, setPublished] = useState(false);
+  const [preview, setPreview] = useState(false);
 
   const set = <K extends keyof Form>(key: K, value: Form[K]) => {
     setForm((f) => ({ ...f, [key]: value }));
@@ -259,13 +260,8 @@ export function CreateWizard() {
           <Button
             variant="secondary"
             size="sm"
-            onClick={() =>
-              toast({
-                title: form.name.trim() || "Untitled tournament",
-                body: "This is how the public listing will read.",
-                tone: "info",
-              })
-            }
+            data-testid="preview"
+            onClick={() => setPreview(true)}
           >
             <Eye size={14} /> Preview
           </Button>
@@ -352,7 +348,131 @@ export function CreateWizard() {
           </div>
         </div>
       </div>
+
+      <AnimatePresence>
+        {preview ? <PreviewDialog form={form} onClose={() => setPreview(false)} /> : null}
+      </AnimatePresence>
     </>
+  );
+}
+
+/* -------------------------------------------------------------- preview --
+   Shows the marketplace listing built from what has been filled in so far,
+   so "Preview" means something rather than describing itself. */
+
+function PreviewDialog({ form, onClose }: { form: Form; onClose: () => void }) {
+  const sport = SPORT_BY_ID[form.sport];
+  const banner = bannerById(form.bannerId);
+  const logo = logoById(form.logoId);
+
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => e.key === "Escape" && onClose();
+    document.addEventListener("keydown", onKey);
+    return () => document.removeEventListener("keydown", onKey);
+  }, [onClose]);
+
+  const fmt = (d: string) =>
+    d
+      ? new Date(d + "T00:00:00Z").toLocaleDateString("en-GB", {
+          day: "numeric",
+          month: "short",
+          timeZone: "UTC",
+        })
+      : "—";
+
+  return (
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      transition={{ duration: 0.2 }}
+      className="fixed inset-0 z-[80] grid place-items-center bg-black/60 p-4 backdrop-blur-sm"
+      onClick={onClose}
+      data-testid="preview-dialog"
+    >
+      <motion.div
+        role="dialog"
+        aria-label="Listing preview"
+        initial={{ opacity: 0, y: 18, scale: 0.97 }}
+        animate={{ opacity: 1, y: 0, scale: 1 }}
+        exit={{ opacity: 0, y: 12, scale: 0.98 }}
+        transition={{ type: "spring", stiffness: 320, damping: 30, mass: 0.6 }}
+        onClick={(e) => e.stopPropagation()}
+        className="w-full max-w-sm overflow-hidden rounded-2xl border border-line bg-bg-elev shadow-[var(--shadow-lift)]"
+      >
+        <div className="flex items-center justify-between border-b border-line px-4 py-2.5">
+          <span className="text-[11px] font-semibold uppercase tracking-[0.18em] text-fg-subtle">
+            Marketplace listing
+          </span>
+          <button
+            onClick={onClose}
+            aria-label="Close preview"
+            data-testid="preview-close"
+            className="grid h-7 w-7 place-items-center rounded-lg text-fg-subtle transition-colors duration-[var(--dur)] hover:bg-surface hover:text-fg"
+          >
+            <X size={15} />
+          </button>
+        </div>
+
+        {/* the card exactly as browse renders it */}
+        <div className={cx("relative h-32 bg-gradient-to-br", banner.className)}>
+          <div className="absolute inset-0 turf-bg opacity-50" />
+          {form.customBanner ? (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img src={form.customBanner} alt="" className="absolute inset-0 h-full w-full object-cover" />
+          ) : null}
+          <div className="absolute inset-0 bg-[linear-gradient(to_top,var(--bg-elev),transparent_70%)]" />
+          <span className="absolute left-3 top-3">
+            <Badge tone="open">Registration open</Badge>
+          </span>
+          <span className="absolute bottom-3 left-3 inline-flex items-center gap-1.5 rounded-full border border-line bg-[color-mix(in_oklab,var(--bg)_70%,transparent)] px-2.5 py-1 text-[11px] font-medium text-fg-muted">
+            {form.customLogo ? (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img src={form.customLogo} alt="" className="h-3.5 w-3.5 rounded object-cover" />
+            ) : (
+              <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke={logo.colour} strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+                <path d={logo.glyph} />
+              </svg>
+            )}
+            {sport.name}
+            <span className="text-fg-subtle">·</span>
+            {sport.matchTypes.find((m) => m.id === form.matchType)?.label ?? form.matchType}
+          </span>
+        </div>
+
+        <div className="p-4">
+          <h3 className="text-[15px] font-semibold leading-snug tracking-tight" data-testid="preview-name">
+            {form.name.trim() || "Untitled tournament"}
+          </h3>
+          <div className="mt-2 flex flex-wrap items-center gap-x-3 gap-y-1 text-[12px] text-fg-muted">
+            <span className="inline-flex items-center gap-1.5">
+              <MapPin size={12} /> {form.city.trim() || "City not set"}
+            </span>
+            <span className="inline-flex items-center gap-1.5">
+              <CalendarDays size={12} /> {fmt(form.start)} – {fmt(form.end)}
+            </span>
+          </div>
+
+          <div className="mt-4">
+            <div className="mb-1.5 flex items-center justify-between text-[11.5px]">
+              <span className="inline-flex items-center gap-1.5 text-fg-muted">
+                <Users size={12} /> 0/{form.maxTeams || "—"} {sport.entrant.many.toLowerCase()}
+              </span>
+              <span className="font-semibold">
+                {Number(form.entryFee) > 0
+                  ? `${form.currency} ${Number(form.entryFee).toLocaleString("en-IN")} entry`
+                  : "Free entry"}
+              </span>
+            </div>
+            <Progress value={0} max={Number(form.maxTeams) || 1} />
+          </div>
+        </div>
+
+        <p className="border-t border-line px-4 py-2.5 text-[11px] text-fg-subtle">
+          Updates as you fill the form. Nothing is published yet.
+        </p>
+      </motion.div>
+    </motion.div>
   );
 }
 

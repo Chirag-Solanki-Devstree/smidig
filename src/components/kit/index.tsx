@@ -276,13 +276,17 @@ export function Td({
   children,
   align,
   className,
+  testId,
 }: {
   children?: ReactNode;
   align?: "right";
   className?: string;
+  /** Explicit, because this component does not spread unknown props. */
+  testId?: string;
 }) {
   return (
     <td
+      data-testid={testId}
       className={cx("whitespace-nowrap px-4 py-3", align === "right" ? "text-right" : "", className)}
     >
       {children}

@@ -411,3 +411,127 @@ test.describe("waitlist email", () => {
     await expect(page.getByTestId("waitlist-email")).toHaveValue("");
   });
 });
+
+/* ------------------------------------------------------------ preview --- */
+test.describe("wizard preview", () => {
+  test("Preview opens a real listing, not a toast", async ({ page }) => {
+    await go(page);
+    await page.getByTestId("name").fill("Panvel Premier Cup");
+    await page.getByTestId("city").fill("Panvel");
+    await page.getByTestId("entryfee"); // no-op; entry fee lives on a later step
+
+    await page.getByTestId("preview").click();
+    const dialog = page.getByTestId("preview-dialog");
+    await expect(dialog).toBeVisible();
+    await expect(page.getByTestId("preview-name")).toContainText("Panvel Premier Cup");
+    await expect(dialog).toContainText("Panvel");
+
+    await page.getByTestId("preview-close").click();
+    await expect(dialog).toHaveCount(0);
+  });
+
+  test("Escape closes the preview", async ({ page }) => {
+    await go(page);
+    await page.getByTestId("preview").click();
+    await expect(page.getByTestId("preview-dialog")).toBeVisible();
+    await page.keyboard.press("Escape");
+    await expect(page.getByTestId("preview-dialog")).toHaveCount(0);
+  });
+
+  test("preview reflects the chosen banner and format", async ({ page }) => {
+    await go(page);
+    await page.getByTestId("name").fill("Dusk Cup");
+    await page.getByTestId("banner-dusk").click();
+    await page.getByTestId("preview").click();
+    await expect(page.getByTestId("preview-dialog")).toContainText("Cricket");
+    await expect(page.getByTestId("preview-dialog")).toContainText("T20");
+  });
+});
+
+/* ------------------------------------------------- live scoring is joined */
+test.describe("live scoring updates everything together", () => {
+  const openScoring = async (page: Page) => {
+    await page.goto("/dashboard/scoring");
+    await expect(page.getByTestId("score")).toBeVisible();
+  };
+
+  test("a four adds to the total, the striker and the bowler", async ({ page }) => {
+    await openScoring(page);
+    await expect(page.getByTestId("score")).toContainText("182");
+    await expect(page.getByTestId("striker-runs")).toHaveText("64");
+    await expect(page.getByTestId("striker-balls")).toHaveText("38");
+    await expect(page.getByTestId("bowler-runs")).toHaveText("28");
+
+    await page.getByTestId("run-4").click();
+
+    await expect(page.getByTestId("score")).toContainText("186");
+    await expect(page.getByTestId("striker-runs")).toHaveText("68");
+    await expect(page.getByTestId("striker-balls")).toHaveText("39");
+    await expect(page.getByTestId("bowler-runs")).toHaveText("32");
+  });
+
+  test("an odd run rotates the strike", async ({ page }) => {
+    await openScoring(page);
+    const before = await page.getByTestId("striker-name").textContent();
+    await page.getByTestId("run-1").click();
+    const after = await page.getByTestId("striker-name").textContent();
+    expect(after).not.toBe(before);
+  });
+
+  test("a wicket brings in a new batter on nought", async ({ page }) => {
+    await openScoring(page);
+    await page.getByTestId("wicket").click();
+
+    await expect(page.getByTestId("score")).toContainText("/5");
+    await expect(page.getByTestId("striker-runs")).toHaveText("0");
+    await expect(page.getByTestId("striker-balls")).toHaveText("0");
+    await expect(page.getByTestId("bowler-wickets")).toHaveText("3");
+  });
+
+  test("a wide adds a run but no ball to the striker", async ({ page }) => {
+    await openScoring(page);
+    await expect(page.getByTestId("overs")).toContainText("18.2");
+    await page.getByTestId("extra-wd").click();
+
+    await expect(page.getByTestId("score")).toContainText("183");
+    await expect(page.getByTestId("striker-balls")).toHaveText("38"); // unchanged
+    await expect(page.getByTestId("bowler-runs")).toHaveText("29");
+    // No legal ball, so the over does not advance — though the run rate does.
+    await expect(page.getByTestId("overs")).toContainText("18.2");
+  });
+
+  test("a bye adds a team run but not the batter's", async ({ page }) => {
+    await openScoring(page);
+    await page.getByTestId("extra-b").click();
+
+    await expect(page.getByTestId("score")).toContainText("183");
+    await expect(page.getByTestId("striker-runs")).toHaveText("64"); // not his
+    await expect(page.getByTestId("striker-balls")).toHaveText("39"); // ball used
+    await expect(page.getByTestId("bowler-runs")).toHaveText("28"); // not charged
+  });
+
+  test("undo reverses the whole ball, not just the score", async ({ page }) => {
+    await openScoring(page);
+    await page.getByTestId("run-6").click();
+    await expect(page.getByTestId("score")).toContainText("188");
+    await expect(page.getByTestId("striker-runs")).toHaveText("70");
+
+    await page.getByTestId("undo").click();
+    await expect(page.getByTestId("score")).toContainText("182");
+    await expect(page.getByTestId("striker-runs")).toHaveText("64");
+    await expect(page.getByTestId("striker-balls")).toHaveText("38");
+    await expect(page.getByTestId("bowler-runs")).toHaveText("28");
+  });
+
+  test("completing the over clears the strip and changes the bowler", async ({ page }) => {
+    await openScoring(page);
+    // 18.2 overs → four legal balls to the over's end.
+    const first = await page.getByTestId("current-bowler").textContent();
+    for (let i = 0; i < 4; i++) await page.getByTestId("run-0").click();
+
+    await expect(page.getByTestId("overs")).toContainText("19.0");
+    await expect(page.getByTestId("over-strip").locator("> span")).toHaveCount(0);
+    const second = await page.getByTestId("current-bowler").textContent();
+    expect(second).not.toBe(first);
+  });
+});
