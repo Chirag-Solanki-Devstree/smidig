@@ -11,6 +11,7 @@ import {
   YAxis,
 } from "recharts";
 import { REVENUE_BY_DAY } from "@/lib/data";
+import { useInViewOnce } from "@/components/fx/in-view";
 
 const FLOWS = [
   { key: "entry", label: "Entries", colour: "var(--accent)" },
@@ -21,10 +22,15 @@ const FLOWS = [
 
 /** Revenue by day, stacked by money flow — the five flows the client defined. */
 export function RevenueChart() {
+  // Recharts animates on mount. Holding the data back until the card is in
+  // view means the bars grow as you reach them, not while off screen.
+  const { ref, seen } = useInViewOnce<HTMLDivElement>({ amount: 0.2 });
+  const data = seen ? REVENUE_BY_DAY : REVENUE_BY_DAY.map((d) => ({ ...d, entry: 0, tickets: 0, sponsors: 0, stalls: 0 }));
+
   return (
-    <div className="h-64 w-full">
+    <div ref={ref} className="h-64 w-full">
       <ResponsiveContainer width="100%" height="100%">
-        <BarChart data={REVENUE_BY_DAY} margin={{ top: 8, right: 8, bottom: 0, left: -16 }}>
+        <BarChart data={data} margin={{ top: 8, right: 8, bottom: 0, left: -16 }}>
           <CartesianGrid stroke="var(--border)" vertical={false} />
           <XAxis
             dataKey="day"
@@ -61,6 +67,9 @@ export function RevenueChart() {
               name={f.label}
               stackId="rev"
               fill={f.colour}
+              isAnimationActive
+              animationDuration={760}
+              animationEasing="ease-out"
               radius={f.key === "stalls" ? [4, 4, 0, 0] : 0}
             />
           ))}

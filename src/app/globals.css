@@ -311,6 +311,49 @@
     background-size: 100% 1.5px;
   }
 
+  /* ---- console scroll choreography -------------------------------------
+     Everything below is transform/opacity only and driven by a single class
+     flip from an IntersectionObserver, so scrolling stays on the compositor.
+     A console is for reading data: the motion is short, once, and quiet. */
+
+  /* Scoped to html.js: without scripting nothing ever adds `in`, so the
+     content must not start hidden. */
+  .js .rise {
+    opacity: 0;
+    transform: translate3d(0, 14px, 0);
+    transition:
+      opacity 520ms var(--ease-out),
+      transform 520ms var(--ease-out);
+  }
+  .rise.in {
+    opacity: 1;
+    transform: none;
+  }
+
+  /* Children arrive one after another. Index set inline as --i. */
+  .js .rise-stagger > * {
+    opacity: 0;
+    transform: translate3d(0, 16px, 0);
+    transition:
+      opacity 520ms var(--ease-out),
+      transform 520ms var(--ease-out);
+    transition-delay: calc(var(--i, 0) * 55ms);
+  }
+  .rise-stagger.in > * {
+    opacity: 1;
+    transform: none;
+  }
+
+  /* Draws an SVG path on once the card is seen. */
+  .js .draw {
+    stroke-dasharray: var(--len, 300);
+    stroke-dashoffset: var(--len, 300);
+    transition: stroke-dashoffset 900ms var(--ease-out);
+  }
+  .draw.in {
+    stroke-dashoffset: 0;
+  }
+
   /* Data-table rows arrive in a short cascade. CSS-only so server-rendered
      tables get it without shipping a motion component per row. */
   @keyframes row-in {
@@ -323,8 +366,13 @@
       transform: none;
     }
   }
-  .rows-cascade > tr {
-    animation: row-in 480ms var(--ease-out) both;
+  /* Paused until the table is actually in view, so rows below the fold do
+     not play their entrance where nobody can see it. */
+  .js .rows-cascade > tr {
+    opacity: 0;
+  }
+  .rows-cascade.in > tr {
+    animation: row-in 460ms var(--ease-out) both;
   }
   .rows-cascade > tr:nth-child(1) { animation-delay: 20ms; }
   .rows-cascade > tr:nth-child(2) { animation-delay: 60ms; }
@@ -359,8 +407,19 @@
 @media (prefers-reduced-motion: reduce) {
   .marquee-track,
   .shimmer,
-  .rows-cascade > tr {
+  .rows-cascade.in > tr {
     animation: none !important;
+  }
+  .rows-cascade > tr {
+    opacity: 1;
+  }
+  .rise,
+  .rise-stagger > *,
+  .draw {
+    opacity: 1 !important;
+    transform: none !important;
+    transition: none !important;
+    stroke-dashoffset: 0 !important;
   }
   .flip {
     transition: none !important;

@@ -260,6 +260,21 @@ export const ORDERS: Order[] = [
   { id: "SMD-10461", date: "2026-10-30", buyer: "Chai Point", kind: "stall", item: "Stall A2 · Weekend", subtotal: 900000, fee: 45000, status: "paid" },
 ];
 
+/** Seven-day series behind the stat-card sparklines. */
+export const SPARKS = {
+  revenue: [12, 18, 15, 24, 31, 28, 42],
+  fees: [1, 2, 1.5, 2.4, 3.1, 2.8, 4.2],
+  payout: [11, 16, 13, 21, 28, 25, 38],
+  teams: [2, 3, 4, 5, 6, 7, 8],
+  tickets: [40, 96, 150, 212, 288, 352, 418],
+  sponsors: [1, 2, 3, 4, 5, 6, 7],
+  stalls: [0, 1, 1, 2, 3, 4, 5],
+  gmv: [180, 240, 300, 360, 410, 440, 482],
+  orders: [12, 19, 15, 26, 31, 29, 37],
+  live: [0, 1, 2, 1, 2, 3, 2],
+  scanned: [30, 78, 120, 165, 210, 255, 286],
+} as const;
+
 export const REVENUE_BY_DAY = [
   { day: "Oct 30", entry: 24000, tickets: 3200, sponsors: 0, stalls: 9000 },
   { day: "Oct 31", entry: 12000, tickets: 4100, sponsors: 0, stalls: 0 },

@@ -1,4 +1,5 @@
 import { PageTitle } from "@/components/layouts/console-shell";
+import { Rise, RiseStagger } from "@/components/fx/reveal-on-scroll";
 import {
   Badge,
   Card,
@@ -25,11 +26,11 @@ export default function Page() {
         sub="Vendors pick a pitch on the venue map and pay online. Held slots release after 10 minutes."
       />
 
-      <div className="mb-5 grid gap-3 sm:grid-cols-3">
+      <RiseStagger className="mb-5 grid gap-3 sm:grid-cols-3">
         <StatCard label="Stall revenue" value={formatMoney({ amount: revenue, currency: "INR" }, { compact: true })} />
         <StatCard label="Booked" value={`${booked.length}/${STALLS.length}`} sub="2 held in checkout" />
         <StatCard label="Vendors" value="3" sub="all documents verified" />
-      </div>
+      </RiseStagger>
 
       <Card className="mb-5 p-5">
         <h2 className="text-[14px] font-semibold">Venue layout</h2>

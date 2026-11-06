@@ -1,5 +1,6 @@
 import { CalendarRange, Radio, Wand2 } from "lucide-react";
 import { PageTitle } from "@/components/layouts/console-shell";
+import { Rise, RiseStagger } from "@/components/fx/reveal-on-scroll";
 import {
   Badge,
   Button,
@@ -36,7 +37,7 @@ export default function Page() {
         }
       />
 
-      <div className="mb-4 grid gap-3 sm:grid-cols-3">
+      <RiseStagger className="mb-4 grid gap-3 sm:grid-cols-3">
         {[
           { k: "Matches scheduled", v: "18", s: "6 played · 2 live" },
           { k: "Venues in use", v: "1", s: "Wankhede Ground B" },
@@ -48,8 +49,9 @@ export default function Page() {
             <p className="mt-1 text-[11.5px] text-fg-subtle">{x.s}</p>
           </Card>
         ))}
-      </div>
+      </RiseStagger>
 
+      <Rise>
       <Card className="overflow-hidden">
         <div className="flex items-center gap-2 border-b border-line px-5 py-3.5">
           <CalendarRange size={15} className="text-[var(--accent)]" />
@@ -121,6 +123,7 @@ export default function Page() {
           </Tbody>
         </Table>
       </Card>
+      </Rise>
     </>
   );
 }

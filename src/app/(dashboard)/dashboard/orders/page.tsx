@@ -1,6 +1,7 @@
 import { Download } from "lucide-react";
 import { PageTitle } from "@/components/layouts/console-shell";
 import { StatCard } from "@/components/kit";
+import { Rise, RiseStagger } from "@/components/fx/reveal-on-scroll";
 import { OrdersTable } from "@/components/console/orders-table";
 import { ActionButton } from "@/components/kit/action-button";
 import { ORDERS } from "@/lib/data";
@@ -39,7 +40,7 @@ export default function Page() {
         }
       />
 
-      <div className="mb-5 grid gap-3 sm:grid-cols-4">
+      <RiseStagger className="mb-5 grid gap-3 sm:grid-cols-4">
         <StatCard label="Gross" value={formatMoney({ amount: gross, currency: "INR" }, { compact: true })} />
         <StatCard label="Smidig fees" value={formatMoney({ amount: fees, currency: "INR" }, { compact: true })} />
         <StatCard label="Refunded" value={formatMoney({ amount: refunded, currency: "INR" }, { compact: true })} />
@@ -47,9 +48,11 @@ export default function Page() {
           label="Net to you"
           value={formatMoney({ amount: gross - fees, currency: "INR" }, { compact: true })}
         />
-      </div>
+      </RiseStagger>
 
-      <OrdersTable />
+      <Rise>
+        <OrdersTable />
+      </Rise>
     </>
   );
 }

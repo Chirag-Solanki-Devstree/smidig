@@ -26,7 +26,7 @@ export const metadata: Metadata = {
   robots: { index: false, follow: false, nocache: true },
 };
 
-const noFlash = `(function(){try{var m=localStorage.getItem("${MODE_KEY}");document.documentElement.setAttribute("data-mode",m==="light"?"light":"dark");}catch(e){}})();`;
+const noFlash = `(function(){var d=document.documentElement;d.classList.add("js");try{var m=localStorage.getItem("${MODE_KEY}");d.setAttribute("data-mode",m==="light"?"light":"dark");}catch(e){}})();`;
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (

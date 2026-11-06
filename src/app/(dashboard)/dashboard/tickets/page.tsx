@@ -1,4 +1,5 @@
 import { PageTitle } from "@/components/layouts/console-shell";
+import { Rise, RiseStagger } from "@/components/fx/reveal-on-scroll";
 import {
   Badge,
   Button,
@@ -13,7 +14,7 @@ import {
   Tr,
 } from "@/components/kit";
 import { ActionButton } from "@/components/kit/action-button";
-import { MATCHES, TICKET_TYPES, teamByShort } from "@/lib/data";
+import { MATCHES, TICKET_TYPES, teamByShort, SPARKS } from "@/lib/data";
 import { formatMoney, splitFee } from "@/lib/money";
 
 export const metadata = { title: "Tickets" };
@@ -31,11 +32,11 @@ export default function Page() {
         }
       />
 
-      <div className="mb-5 grid gap-3 sm:grid-cols-3">
+      <RiseStagger className="mb-5 grid gap-3 sm:grid-cols-3">
         <StatCard label="Tickets sold" value="418" sub="across 2 live matches" />
         <StatCard label="Ticket revenue" value={formatMoney({ amount: 486000, currency: "INR" }, { compact: true })} />
-        <StatCard label="Scanned at gate" value="286" sub="68% of sold" />
-      </div>
+        <StatCard label="Scanned at gate" value="286" sub="68% of sold" spark={[...SPARKS.scanned]} />
+      </RiseStagger>
 
       <Card className="mb-5 overflow-hidden">
         <div className="border-b border-line px-5 py-3.5">

@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useState } from "react";
-import { AnimatePresence, motion } from "motion/react";
+import { AnimatePresence, motion, useMotionValueEvent, useScroll, useSpring } from "motion/react";
 import { Bell, ChevronDown, Command, Menu, PanelLeftClose, X } from "lucide-react";
 import { useMode } from "@/components/mode-provider";
 import { BallMark } from "@/components/ui";
@@ -31,6 +31,13 @@ export function ConsoleShell({
   const nav = surface === "admin" ? ADMIN_NAV : DASHBOARD_NAV;
   const [collapsed, setCollapsed] = useState(false);
   const [drawer, setDrawer] = useState(false);
+  const [condensed, setCondensed] = useState(false);
+
+  // The bar tightens once you leave the top of a long page, so more of the
+  // table stays on screen. One motion value, no re-render per scroll frame.
+  const { scrollY, scrollYProgress } = useScroll();
+  useMotionValueEvent(scrollY, "change", (v) => setCondensed(v > 60));
+  const rail = useSpring(scrollYProgress, { stiffness: 140, damping: 26, restDelta: 0.001 });
   const pathname = usePathname();
   const { mode, toggle } = useMode();
 
@@ -169,7 +176,19 @@ export function ConsoleShell({
       </div>
 
       <div className="flex min-w-0 flex-1 flex-col">
-        <header className="sticky top-0 z-30 flex h-14 shrink-0 items-center gap-3 border-b border-line bg-[color-mix(in_oklab,var(--bg-elev)_88%,transparent)] px-3 backdrop-blur sm:px-5">
+        <header
+          className={cx(
+            "sticky top-0 z-30 flex shrink-0 items-center gap-3 border-b border-line bg-[color-mix(in_oklab,var(--bg-elev)_88%,transparent)] px-3 backdrop-blur sm:px-5",
+            "transition-[height,box-shadow] duration-[380ms] ease-[var(--ease-out)]",
+            condensed ? "h-12 shadow-[0_10px_30px_-24px_rgba(0,0,0,0.9)]" : "h-14",
+          )}
+        >
+          {/* How far through the page you are. */}
+          <motion.span
+            aria-hidden
+            style={{ scaleX: rail }}
+            className="absolute inset-x-0 bottom-0 h-[2px] origin-left bg-[linear-gradient(90deg,var(--accent),var(--accent-2))]"
+          />
           <button
             onClick={() => setDrawer(true)}
             aria-label="Open menu"

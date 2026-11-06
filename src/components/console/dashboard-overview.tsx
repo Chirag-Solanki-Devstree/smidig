@@ -15,7 +15,8 @@ import {
 import { PageTitle } from "@/components/layouts/console-shell";
 import { RevenueChart } from "@/components/console/revenue-chart";
 import { Badge, Button, Card, Progress, StatCard, TeamBadge } from "@/components/kit";
-import { MATCHES, ORDERS, PENDING_TEAMS, teamByShort } from "@/lib/data";
+import { MATCHES, ORDERS, PENDING_TEAMS, SPARKS, teamByShort } from "@/lib/data";
+import { Rise, RiseStagger } from "@/components/fx/reveal-on-scroll";
 import { formatMoney } from "@/lib/money";
 
 const gross = ORDERS.filter((o) => o.status === "paid").reduce((s, o) => s + o.subtotal, 0);
@@ -43,34 +44,37 @@ export function DashboardOverview() {
         }
       />
 
-      <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+      <RiseStagger className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
         <StatCard
           label="Gross revenue"
           value={formatMoney({ amount: gross, currency: "INR" }, { compact: true })}
           trend={{ dir: "up", text: "18% vs last week" }}
           icon={<TrendingUp size={15} />}
+          spark={[...SPARKS.revenue]}
         />
         <StatCard
           label="Smidig fees"
           value={formatMoney({ amount: fees, currency: "INR" }, { compact: true })}
           sub="5% on paid flows"
           icon={<Banknote size={15} />}
+          spark={[...SPARKS.fees]}
         />
         <StatCard
           label="Net payout"
           value={formatMoney({ amount: gross - fees, currency: "INR" }, { compact: true })}
           sub="Next payout 12 Nov"
+          spark={[...SPARKS.payout]}
         />
-        <StatCard label="Teams registered" value="8/8" sub="Draw is full" icon={<Users size={15} />} />
-      </div>
+        <StatCard label="Teams registered" value="8/8" sub="Draw is full" icon={<Users size={15} />} spark={[...SPARKS.teams]} />
+      </RiseStagger>
 
-      <div className="mt-3 grid gap-3 sm:grid-cols-3">
-        <StatCard label="Tickets sold" value="418" countTo={418} sub="of 600 capacity" icon={<Ticket size={15} />} />
-        <StatCard label="Sponsors active" value="7" countTo={7} sub="1 Title · 3 Gold · 3 Silver" icon={<Handshake size={15} />} />
-        <StatCard label="Stalls booked" value="5/12" countTo={5} countSuffix="/12" sub="2 held in checkout" icon={<Store size={15} />} />
-      </div>
+      <RiseStagger className="mt-3 grid gap-3 sm:grid-cols-3">
+        <StatCard label="Tickets sold" value="418" countTo={418} sub="of 600 capacity" icon={<Ticket size={15} />} spark={[...SPARKS.tickets]} />
+        <StatCard label="Sponsors active" value="7" countTo={7} sub="1 Title · 3 Gold · 3 Silver" icon={<Handshake size={15} />} spark={[...SPARKS.sponsors]} />
+        <StatCard label="Stalls booked" value="5/12" countTo={5} countSuffix="/12" sub="2 held in checkout" icon={<Store size={15} />} spark={[...SPARKS.stalls]} />
+      </RiseStagger>
 
-      <div className="mt-5 grid gap-4 lg:grid-cols-[1.5fr_1fr]">
+      <RiseStagger className="mt-5 grid gap-4 lg:grid-cols-[1.5fr_1fr]">
         <Card className="p-5">
           <div className="mb-4 flex items-center justify-between">
             <div>
@@ -106,9 +110,9 @@ export function DashboardOverview() {
             ))}
           </ul>
         </Card>
-      </div>
+      </RiseStagger>
 
-      <div className="mt-5 grid gap-4 lg:grid-cols-2">
+      <RiseStagger className="mt-5 grid gap-4 lg:grid-cols-2">
         <Card className="overflow-hidden">
           <div className="flex items-center justify-between border-b border-line px-5 py-3.5">
             <h2 className="text-[14px] font-semibold">Today</h2>
@@ -173,15 +177,17 @@ export function DashboardOverview() {
             ))}
           </ul>
         </Card>
-      </div>
+      </RiseStagger>
 
-      <Card className="mt-5 p-5">
+      <Rise className="mt-5">
+      <Card className="p-5">
         <div className="mb-3 flex items-center justify-between">
           <h2 className="text-[14px] font-semibold">Ticket sales · Match 14</h2>
           <span className="font-mono text-[12px] text-fg-subtle">418 / 600</span>
         </div>
         <Progress value={418} max={600} tone="info" />
       </Card>
+      </Rise>
     </>
   );
 }

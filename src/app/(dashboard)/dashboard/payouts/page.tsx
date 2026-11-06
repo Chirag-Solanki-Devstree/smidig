@@ -1,5 +1,6 @@
 import { Banknote, CheckCircle2, ExternalLink } from "lucide-react";
 import { PageTitle } from "@/components/layouts/console-shell";
+import { Rise, RiseStagger } from "@/components/fx/reveal-on-scroll";
 import {
   Badge,
   Button,
@@ -52,7 +53,7 @@ export default function Page() {
         </ActionButton>
       </Card>
 
-      <div className="mb-5 grid gap-3 sm:grid-cols-4">
+      <RiseStagger className="mb-5 grid gap-3 sm:grid-cols-4">
         <StatCard label="Lifetime gross" value={formatMoney({ amount: 9160000, currency: "INR" }, { compact: true })} />
         <StatCard label="Fees kept by Smidig" value={formatMoney({ amount: 458000, currency: "INR" }, { compact: true })} />
         <StatCard label="Paid out" value={formatMoney({ amount: 5738000, currency: "INR" }, { compact: true })} />
@@ -61,7 +62,7 @@ export default function Page() {
           value={formatMoney({ amount: 2964000, currency: "INR" }, { compact: true })}
           icon={<Banknote size={15} />}
         />
-      </div>
+      </RiseStagger>
 
       <Card className="overflow-hidden">
         <div className="border-b border-line px-5 py-3.5">

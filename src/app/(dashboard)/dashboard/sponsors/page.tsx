@@ -1,4 +1,5 @@
 import { PageTitle } from "@/components/layouts/console-shell";
+import { Rise, RiseStagger } from "@/components/fx/reveal-on-scroll";
 import {
   Badge,
   Button,
@@ -32,11 +33,11 @@ export default function Page() {
         }
       />
 
-      <div className="mb-5 grid gap-3 sm:grid-cols-3">
+      <RiseStagger className="mb-5 grid gap-3 sm:grid-cols-3">
         <StatCard label="Sponsorship revenue" value={formatMoney({ amount: booked, currency: "INR" }, { compact: true })} />
         <StatCard label="Packages sold" value="9" sub="of 13 available" />
         <StatCard label="Logos to review" value="2" sub="awaiting your approval" />
-      </div>
+      </RiseStagger>
 
       <Card className="mb-5 overflow-hidden">
         <div className="border-b border-line px-5 py-3.5">

@@ -3,6 +3,7 @@
 import Link from "next/link";
 import type { ComponentProps, ReactNode } from "react";
 import { Counter } from "@/components/fx/counter";
+import { useInViewOnce } from "@/components/fx/in-view";
 import { cx } from "@/lib/cx";
 
 /* ------------------------------------------------------------- primitives */
@@ -21,6 +22,52 @@ export function Card({ className, children, ...rest }: ComponentProps<"div">) {
   );
 }
 
+/** Tiny trend line. Drawn once when the card is scrolled to. */
+function Sparkline({ points, up }: { points: number[]; up: boolean }) {
+  const { ref, seen } = useInViewOnce<SVGSVGElement>();
+  if (points.length < 2) return null;
+
+  const w = 88;
+  const h = 26;
+  const min = Math.min(...points);
+  const max = Math.max(...points);
+  const span = max - min || 1;
+  const step = w / (points.length - 1);
+
+  const d = points
+    .map((p, i) => {
+      const x = (i * step).toFixed(1);
+      const y = (h - ((p - min) / span) * (h - 4) - 2).toFixed(1);
+      return `${i ? "L" : "M"}${x},${y}`;
+    })
+    .join("");
+
+  const colour = up ? "var(--ok)" : "var(--live)";
+
+  return (
+    <svg
+      ref={ref}
+      width={w}
+      height={h}
+      viewBox={`0 0 ${w} ${h}`}
+      aria-hidden
+      className="overflow-visible"
+    >
+      <path
+        d={d}
+        fill="none"
+        stroke={colour}
+        strokeWidth="1.6"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        className={cx("draw", seen && "in")}
+        // Rough path length: enough for the dash trick, no measuring needed.
+        style={{ ["--len" as string]: w * 1.6 }}
+      />
+    </svg>
+  );
+}
+
 export function StatCard({
   label,
   value,
@@ -31,6 +78,7 @@ export function StatCard({
   countPrefix,
   countSuffix,
   countDecimals,
+  spark,
 }: {
   label: string;
   value: ReactNode;
@@ -43,6 +91,8 @@ export function StatCard({
   countPrefix?: string;
   countSuffix?: string;
   countDecimals?: number;
+  /** Trend series for the sparkline. */
+  spark?: number[];
 }) {
   return (
     <Card className="group relative overflow-hidden p-5 transition-[transform,border-color] duration-[var(--dur)] ease-[var(--ease-out)] hover:-translate-y-0.5 hover:border-line-strong">
@@ -63,17 +113,26 @@ export function StatCard({
           value
         )}
       </p>
-      {sub ? <p className="mt-2 text-[11.5px] text-fg-subtle">{sub}</p> : null}
-      {trend ? (
-        <p
-          className={cx(
-            "mt-2 text-[11.5px] font-medium",
-            trend.dir === "up" ? "text-[var(--ok)]" : "text-[var(--live)]",
-          )}
-        >
-          {trend.dir === "up" ? "▲" : "▼"} {trend.text}
-        </p>
-      ) : null}
+      <div className="mt-2 flex items-end justify-between gap-3">
+        <div>
+          {sub ? <p className="text-[11.5px] text-fg-subtle">{sub}</p> : null}
+          {trend ? (
+            <p
+              className={cx(
+                "text-[11.5px] font-medium",
+                trend.dir === "up" ? "text-[var(--ok)]" : "text-[var(--live)]",
+              )}
+            >
+              {trend.dir === "up" ? "▲" : "▼"} {trend.text}
+            </p>
+          ) : null}
+        </div>
+        {spark ? (
+          <span className="shrink-0 opacity-70 transition-opacity duration-[var(--dur)] group-hover:opacity-100">
+            <Sparkline points={spark} up={trend?.dir !== "down"} />
+          </span>
+        ) : null}
+      </div>
     </Card>
   );
 }
@@ -295,7 +354,14 @@ export function Td({
 }
 
 export function Tbody({ children }: { children: ReactNode }) {
-  return <tbody className="rows-cascade">{children}</tbody>;
+  // Hold the cascade until the table is actually in view, so rows further
+  // down the page do not play their entrance before anyone sees them.
+  const { ref, seen } = useInViewOnce<HTMLTableSectionElement>({ amount: 0.02 });
+  return (
+    <tbody ref={ref} className={cx("rows-cascade", seen && "in")}>
+      {children}
+    </tbody>
+  );
 }
 
 export function Tr({ children }: { children: ReactNode }) {
