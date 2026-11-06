@@ -6,6 +6,7 @@ import { Badge, Button, TeamBadge } from "@/components/kit";
 import { teamByShort, type Match } from "@/lib/data";
 import { formatMoney } from "@/lib/money";
 import { cx } from "@/lib/cx";
+import { formatDayTime } from "@/lib/dates";
 
 export function MatchCard({ m, compact }: { m: Match; compact?: boolean }) {
   const A = teamByShort(m.teamA);
@@ -30,7 +31,7 @@ export function MatchCard({ m, compact }: { m: Match; compact?: boolean }) {
             Live
           </Badge>
         ) : m.status === "upcoming" ? (
-          <Badge tone="upcoming">{fmtTime(m.startsAt)}</Badge>
+          <Badge tone="upcoming">{formatDayTime(m.startsAt)}</Badge>
         ) : (
           <Badge tone="completed">Result</Badge>
         )}
@@ -119,9 +120,3 @@ function Side({
   );
 }
 
-function fmtTime(iso: string) {
-  const d = new Date(iso);
-  return d.toLocaleDateString("en-GB", { day: "numeric", month: "short" }) +
-    " · " +
-    d.toLocaleTimeString("en-GB", { hour: "2-digit", minute: "2-digit" });
-}

@@ -39,6 +39,7 @@ import {
 import { useToast } from "@/components/kit/toast";
 import { Rise } from "@/components/fx/reveal-on-scroll";
 import { cx } from "@/lib/cx";
+import { formatDayYearRange } from "@/lib/dates";
 
 const TABS = [
   "Overview",
@@ -66,7 +67,7 @@ export function TournamentView({ slug }: { slug: string }) {
       <header className="relative pt-14">
         <motion.div
           style={{ y: bannerY, scale: bannerScale }}
-          className={cx("absolute inset-x-0 top-0 h-72 origin-top bg-gradient-to-br", t.banner)}
+          className={cx("absolute inset-x-0 top-0 h-72 origin-top", t.banner)}
         >
           <div className="absolute inset-0 turf-bg opacity-50" />
           <div className="absolute inset-0 bg-[linear-gradient(to_top,var(--bg),transparent_75%)]" />
@@ -97,7 +98,7 @@ export function TournamentView({ slug }: { slug: string }) {
                 <MapPin size={13} /> {t.venue}, {t.city}
               </span>
               <span className="inline-flex items-center gap-1.5">
-                <CalendarDays size={13} /> {fmtRange(t.start, t.end)}
+                <CalendarDays size={13} /> {formatDayYearRange(t.start, t.end)}
               </span>
               <span className="inline-flex items-center gap-1.5">
                 <Users size={13} /> {t.teamsJoined}/{t.maxTeams} {sport.entrant.many.toLowerCase()}
@@ -523,13 +524,3 @@ function Venue({ t }: { t: ReturnType<typeof tournamentBySlug> }) {
   );
 }
 
-function fmtRange(a: string, b: string) {
-  const f = (d: string) =>
-    new Date(d + "T00:00:00Z").toLocaleDateString("en-GB", {
-      day: "numeric",
-      month: "short",
-      year: "numeric",
-      timeZone: "UTC",
-    });
-  return `${f(a)} – ${f(b)}`;
-}

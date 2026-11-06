@@ -96,7 +96,7 @@ export const TOURNAMENTS: Tournament[] = [
     sport: "cricket", organizer: "Deccan Sports Trust", city: "Mumbai", venue: "Wankhede Ground B",
     start: "2026-11-02", end: "2026-11-24", status: "ongoing", format: "Groups + Knockout",
     matchType: "T20", ballType: "Leather", entryFee: 1200000, teamsJoined: 8, maxTeams: 8,
-    prize: 50000000, featured: true, banner: "from-[#1b2a12] via-[#243a16] to-[#0b1108]",
+    prize: 50000000, featured: true, banner: "banner-turf",
     blurb: "Eight franchises, 22 nights, one trophy. The city's biggest open-entry T20.",
   },
   {
@@ -104,7 +104,7 @@ export const TOURNAMENTS: Tournament[] = [
     sport: "cricket", organizer: "GSC Events", city: "Ahmedabad", venue: "Sardar Patel Turf 3",
     start: "2026-11-14", end: "2026-11-16", status: "registration_open", format: "Knockout",
     matchType: "T10", ballType: "Tennis", entryFee: 400000, teamsJoined: 11, maxTeams: 16,
-    prize: 7500000, featured: true, banner: "from-[#2a1f12] via-[#3a2a16] to-[#110b08]",
+    prize: 7500000, featured: true, banner: "banner-amber",
     blurb: "Weekend knockout for office teams. Tennis ball, ten overs, zero excuses.",
   },
   {
@@ -112,7 +112,7 @@ export const TOURNAMENTS: Tournament[] = [
     sport: "cricket", organizer: "Kochi Cricket Academy", city: "Kochi", venue: "Marine Drive Ground",
     start: "2026-12-05", end: "2026-12-20", status: "registration_open", format: "League (round robin)",
     matchType: "ODI (50)", ballType: "Leather", entryFee: 0, teamsJoined: 4, maxTeams: 10,
-    prize: 0, banner: "from-[#101f2a] via-[#16303a] to-[#080f11]",
+    prize: 0, banner: "banner-ocean",
     blurb: "Free-entry 50-over league for academy and club sides across Ernakulam.",
   },
   {
@@ -120,7 +120,7 @@ export const TOURNAMENTS: Tournament[] = [
     sport: "cricket", organizer: "Pink City Sports", city: "Jaipur", venue: "Amer Box Arena",
     start: "2026-10-04", end: "2026-10-12", status: "completed", format: "Groups + Knockout",
     matchType: "T10", ballType: "Tennis", entryFee: 250000, teamsJoined: 16, maxTeams: 16,
-    prize: 3000000, banner: "from-[#2a1225] via-[#3a1630] to-[#110810]",
+    prize: 3000000, banner: "banner-dusk",
     blurb: "Floodlit box cricket, sixteen sides, decided on the last ball.",
   },
   {
@@ -128,7 +128,7 @@ export const TOURNAMENTS: Tournament[] = [
     sport: "cricket", organizer: "Surat Schools Board", city: "Surat", venue: "Athwa Sports Complex",
     start: "2026-12-18", end: "2027-01-08", status: "registration_open", format: "Groups + Knockout",
     matchType: "T20", ballType: "Leather", entryFee: 150000, teamsJoined: 6, maxTeams: 24,
-    prize: 2500000, banner: "from-[#12212a] via-[#163440] to-[#080f12]",
+    prize: 2500000, banner: "banner-steel",
     blurb: "Under-16 championship across 24 schools, played through the winter break.",
   },
   {
@@ -136,7 +136,7 @@ export const TOURNAMENTS: Tournament[] = [
     sport: "cricket", organizer: "Orange City Club", city: "Nagpur", venue: "VCA Civil Lines",
     start: "2026-11-28", end: "2026-11-30", status: "registration_closed", format: "Knockout",
     matchType: "T20", ballType: "Leather", entryFee: 600000, teamsJoined: 8, maxTeams: 8,
-    prize: 5000000, banner: "from-[#2a2412] via-[#3a3316] to-[#111008]",
+    prize: 5000000, banner: "banner-clay",
     blurb: "Over-40s knockout. Eight sides, one weekend, bragging rights for a year.",
   },
 ];

@@ -33,7 +33,7 @@ export function Features() {
         >
           {FEATURES.map((c) => (
             <RevealItem key={c.title} className={c.span}>
-              <TiltCard className="p-6" max={7}>
+              <TiltCard className="h-full p-6" max={7}>
                 <div className="mb-5 h-32 overflow-hidden rounded-xl border border-line bg-[color-mix(in_oklab,var(--bg)_55%,transparent)]">
                   <Art name={c.art} />
                 </div>

@@ -48,17 +48,3 @@ export function splitFee(
     ? { buyerPays: gross + fee, organizerGets: gross, smidigFee: fee }
     : { buyerPays: gross, organizerGets: gross - fee, smidigFee: fee };
 }
-
-/* Same reasoning as the number formatters above: this one is called once per
-   fixture row, so it is built once rather than per cell. */
-const MATCH_TIME = new Intl.DateTimeFormat("en-GB", {
-  day: "numeric",
-  month: "short",
-  hour: "2-digit",
-  minute: "2-digit",
-});
-
-/** "12 Apr, 14:30" — the fixture-list time format. */
-export function formatMatchTime(iso: string) {
-  return MATCH_TIME.format(new Date(iso));
-}

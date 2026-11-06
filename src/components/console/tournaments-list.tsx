@@ -12,6 +12,7 @@ import { DRAFTS_EVENT, clearDrafts, readDrafts, type DraftTournament } from "@/l
 import { formatMoney } from "@/lib/money";
 import { bannerById } from "@/lib/presets";
 import { cx } from "@/lib/cx";
+import { formatDay } from "@/lib/dates";
 
 const LABEL = {
   draft: ["neutral", "Draft"],
@@ -136,7 +137,7 @@ export function TournamentsList() {
                     </Badge>
                   </Td>
                   <Td className="text-fg-muted">
-                    {fmt(t.start)} – {fmt(t.end)}
+                    {formatDay(t.start)} – {formatDay(t.end)}
                   </Td>
                   <Td align="right">
                     <span className="inline-flex w-24 flex-col items-end gap-1.5">
@@ -183,9 +184,3 @@ export function TournamentsList() {
   );
 }
 
-function fmt(d: string) {
-  if (!d) return "—";
-  const date = new Date(d + "T00:00:00Z");
-  if (Number.isNaN(date.getTime())) return d;
-  return date.toLocaleDateString("en-GB", { day: "numeric", month: "short", timeZone: "UTC" });
-}

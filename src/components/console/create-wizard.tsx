@@ -12,6 +12,7 @@ import { SPORTS, SPORT_BY_ID, type SportId } from "@/lib/sports";
 import { BANNER_PRESETS, LOGO_PRESETS, bannerById, logoById } from "@/lib/presets";
 import { addDraft, slugify } from "@/lib/drafts";
 import { formatNumber } from "@/lib/money";
+import { formatDay } from "@/lib/dates";
 import { cx } from "@/lib/cx";
 
 const STEPS = [
@@ -372,14 +373,6 @@ function PreviewDialog({ form, onClose }: { form: Form; onClose: () => void }) {
     return () => document.removeEventListener("keydown", onKey);
   }, [onClose]);
 
-  const fmt = (d: string) =>
-    d
-      ? new Date(d + "T00:00:00Z").toLocaleDateString("en-GB", {
-          day: "numeric",
-          month: "short",
-          timeZone: "UTC",
-        })
-      : "—";
 
   return (
     <motion.div
@@ -416,7 +409,7 @@ function PreviewDialog({ form, onClose }: { form: Form; onClose: () => void }) {
         </div>
 
         {/* the card exactly as browse renders it */}
-        <div className={cx("relative h-32 bg-gradient-to-br", banner.className)}>
+        <div className={cx("relative h-32", banner.className)}>
           <div className="absolute inset-0 turf-bg opacity-50" />
           {form.customBanner ? (
             // eslint-disable-next-line @next/next/no-img-element
@@ -450,7 +443,7 @@ function PreviewDialog({ form, onClose }: { form: Form; onClose: () => void }) {
               <MapPin size={12} /> {form.city.trim() || "City not set"}
             </span>
             <span className="inline-flex items-center gap-1.5">
-              <CalendarDays size={12} /> {fmt(form.start)} – {fmt(form.end)}
+              <CalendarDays size={12} /> {formatDay(form.start)} – {formatDay(form.end)}
             </span>
           </div>
 
@@ -644,13 +637,13 @@ function Basics({ form, set, errors }: { form: Form; set: Setter; errors: Errors
                   set("bannerId", b.id);
                 }}
                 className={cx(
-                  "group relative h-16 overflow-hidden rounded-xl border bg-gradient-to-br transition-[border-color,transform] duration-[var(--dur)] ease-[var(--ease-out)] hover:-translate-y-0.5",
+                  "group relative h-16 overflow-hidden rounded-xl border transition-[border-color,transform] duration-[var(--dur)] ease-[var(--ease-out)] hover:-translate-y-0.5",
                   b.className,
                   on ? "border-[var(--accent)]" : "border-line",
                 )}
               >
                 <span className="absolute inset-0 turf-bg opacity-50" />
-                <span className="absolute bottom-1.5 left-2 text-[11px] text-white/80">{b.label}</span>
+                <span className="absolute bottom-1.5 left-2 text-[11px] text-fg">{b.label}</span>
                 {on ? (
                   <span className="absolute right-1.5 top-1.5 grid h-5 w-5 place-items-center rounded-full bg-[var(--accent)] text-[var(--accent-fg)]">
                     <Check size={11} />
@@ -1015,7 +1008,7 @@ function Review({ form, sport }: { form: Form; sport: (typeof SPORT_BY_ID)[Sport
   return (
     <div className="space-y-4">
       <Card className="overflow-hidden">
-        <div className={cx("relative h-28 bg-gradient-to-br", banner.className)}>
+        <div className={cx("relative h-28", banner.className)}>
           <div className="absolute inset-0 turf-bg opacity-50" />
           {form.customBanner ? (
             // eslint-disable-next-line @next/next/no-img-element

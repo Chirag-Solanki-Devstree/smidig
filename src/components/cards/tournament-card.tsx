@@ -4,6 +4,7 @@ import Link from "next/link";
 import { CalendarDays, MapPin, Trophy, Users } from "lucide-react";
 import { Badge, Progress, TeamBadge } from "@/components/kit";
 import { formatMoney } from "@/lib/money";
+import { formatDayRange } from "@/lib/dates";
 import { SPORT_BY_ID } from "@/lib/sports";
 import type { Tournament } from "@/lib/data";
 import { cx } from "@/lib/cx";
@@ -24,10 +25,14 @@ export function TournamentCard({ t }: { t: Tournament }) {
   return (
     <Link
       href={`/t/${t.slug}`}
-      className="group relative flex flex-col overflow-hidden rounded-2xl border border-line bg-[color-mix(in_oklab,var(--bg-elev)_82%,transparent)] transition-[transform,border-color,box-shadow] duration-[var(--dur)] ease-[var(--ease-out)] hover:-translate-y-1 hover:border-line-strong hover:shadow-[0_24px_60px_-30px_var(--glow)]"
+      // h-full matters: the card is a grid item's child, not the item itself,
+      // so without it the card shrinks to its content and a tournament with no
+      // prize pool ends up visibly shorter than its neighbours. With it, every
+      // card fills its row and the mt-auto footer below lines up across them.
+      className="group relative flex h-full flex-col overflow-hidden rounded-2xl border border-line bg-[color-mix(in_oklab,var(--bg-elev)_82%,transparent)] transition-[transform,border-color,box-shadow] duration-[var(--dur)] ease-[var(--ease-out)] hover:-translate-y-1 hover:border-line-strong hover:shadow-[0_24px_60px_-30px_var(--glow)]"
     >
       {/* banner */}
-      <div className={cx("relative h-32 bg-gradient-to-br", t.banner)}>
+      <div className={cx("relative h-32", t.banner)}>
         <div className="absolute inset-0 turf-bg opacity-50" />
         <div className="absolute inset-0 bg-[linear-gradient(to_top,var(--bg-elev),transparent_70%)]" />
         <div className="absolute inset-x-3 top-3 flex items-start justify-between gap-2">
@@ -54,7 +59,7 @@ export function TournamentCard({ t }: { t: Tournament }) {
             <MapPin size={12} /> {t.city}
           </span>
           <span className="inline-flex items-center gap-1.5">
-            <CalendarDays size={12} /> {fmtRange(t.start, t.end)}
+            <CalendarDays size={12} /> {formatDayRange(t.start, t.end)}
           </span>
         </div>
 
@@ -83,14 +88,5 @@ export function TournamentCard({ t }: { t: Tournament }) {
   );
 }
 
-function fmtRange(a: string, b: string) {
-  const f = (d: string) =>
-    new Date(d + "T00:00:00Z").toLocaleDateString("en-GB", {
-      day: "numeric",
-      month: "short",
-      timeZone: "UTC",
-    });
-  return `${f(a)} – ${f(b)}`;
-}
 
 export { TeamBadge };

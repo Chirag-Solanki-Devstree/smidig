@@ -25,7 +25,7 @@ function sourceFiles(dir = "src"): string[] {
 test.describe.configure({ mode: "serial" });
 
 test.describe("performance guards", () => {
-  test("no toLocaleString in rendered code", () => {
+  test("no per-call locale formatting in rendered code", () => {
     // `n.toLocaleString(locale)` constructs a fresh Intl formatter on every
     // call, and building the formatter is the expensive half. These screens
     // format money in table cells, stat cards and chart tooltips, so the cost
@@ -33,14 +33,16 @@ test.describe("performance guards", () => {
     // 32.6ms of script while the pointer crossed the chart mid-scroll.
     // Use the shared formatters in src/lib/money.ts instead — they are built
     // once at module scope.
+    // toLocaleDateString and toLocaleTimeString cost exactly the same and were
+    // missed by the first version of this guard, which named only one of them.
     const offenders = sourceFiles()
       .map((f) => [f, code(readFileSync(f, "utf8"))] as const)
-      .filter(([, src]) => /\.toLocaleString\(/.test(src))
+      .filter(([, src]) => /\.toLocale(String|DateString|TimeString)\(/.test(src))
       .map(([f]) => f);
 
     expect(
       offenders,
-      "use the cached Intl formatters in src/lib/money.ts (formatMoney / formatNumber / formatMatchTime)",
+      "use the cached formatters in src/lib/money.ts or src/lib/dates.ts",
     ).toEqual([]);
   });
 

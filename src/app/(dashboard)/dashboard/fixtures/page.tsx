@@ -14,7 +14,7 @@ import {
 } from "@/components/kit";
 import { ActionButton } from "@/components/kit/action-button";
 import { MATCHES, teamByShort } from "@/lib/data";
-import { formatMatchTime } from "@/lib/money";
+import { formatMatchTime } from "@/lib/dates";
 
 export const metadata = { title: "Fixtures" };
 

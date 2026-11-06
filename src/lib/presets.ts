@@ -4,12 +4,12 @@
 export type BannerPreset = { id: string; label: string; className: string };
 
 export const BANNER_PRESETS: BannerPreset[] = [
-  { id: "turf", label: "Night turf", className: "from-[#1b2a12] via-[#243a16] to-[#0b1108]" },
-  { id: "amber", label: "Floodlight", className: "from-[#2a1f12] via-[#3a2a16] to-[#110b08]" },
-  { id: "ocean", label: "Coastal", className: "from-[#101f2a] via-[#16303a] to-[#080f11]" },
-  { id: "dusk", label: "Dusk", className: "from-[#2a1225] via-[#3a1630] to-[#110810]" },
-  { id: "clay", label: "Clay", className: "from-[#2a2412] via-[#3a3316] to-[#111008]" },
-  { id: "steel", label: "Steel", className: "from-[#1a1f26] via-[#252c36] to-[#0b0e12]" },
+  { id: "turf", label: "Night turf", className: "banner-turf" },
+  { id: "amber", label: "Floodlight", className: "banner-amber" },
+  { id: "ocean", label: "Coastal", className: "banner-ocean" },
+  { id: "dusk", label: "Dusk", className: "banner-dusk" },
+  { id: "clay", label: "Clay", className: "banner-clay" },
+  { id: "steel", label: "Steel", className: "banner-steel" },
 ];
 
 export type LogoPreset = { id: string; label: string; colour: string; glyph: string };

@@ -448,3 +448,54 @@
     transition: none !important;
   }
 }
+
+/* ==========================================================================
+   BANNERS — ready-made tournament artwork.
+
+   These used to be Tailwind arbitrary hex values duplicated between
+   src/lib/presets.ts and src/lib/data.ts, and they were authored only for the
+   night-stadium palette. On a light page they stayed dark, so every hero and
+   every card wore a muddy olive-brown band across the top. A gradient written
+   as `from-[#1b2a12]` cannot have a light twin, so they live here instead:
+   one source of truth, and a [data-mode="light"] variant that can exist.
+   ========================================================================== */
+.banner-turf {
+  background-image: linear-gradient(to bottom right, #1b2a12, #243a16 55%, #0b1108);
+}
+.banner-amber {
+  background-image: linear-gradient(to bottom right, #2a1f12, #3a2a16 55%, #110b08);
+}
+.banner-ocean {
+  background-image: linear-gradient(to bottom right, #101f2a, #16303a 55%, #080f11);
+}
+.banner-dusk {
+  background-image: linear-gradient(to bottom right, #2a1225, #3a1630 55%, #110810);
+}
+.banner-clay {
+  background-image: linear-gradient(to bottom right, #2a2412, #3a3316 55%, #111008);
+}
+.banner-steel {
+  background-image: linear-gradient(to bottom right, #1a1f26, #252c36 55%, #0b0e12);
+}
+
+/* Light twins: the same hue, lifted to sit on the light page background.
+   They stay tints rather than washes so the status badges and sport chip,
+   which carry their own surfaces, still read against them. */
+[data-mode="light"] .banner-turf {
+  background-image: linear-gradient(to bottom right, #d8edbf, #bfe39b 55%, #eef7e4);
+}
+[data-mode="light"] .banner-amber {
+  background-image: linear-gradient(to bottom right, #fbe3c0, #f5cf99 55%, #fdf3e6);
+}
+[data-mode="light"] .banner-ocean {
+  background-image: linear-gradient(to bottom right, #cce5f5, #a6d1ee 55%, #e9f4fb);
+}
+[data-mode="light"] .banner-dusk {
+  background-image: linear-gradient(to bottom right, #f0d7ee, #e0b5dc 55%, #faedf8);
+}
+[data-mode="light"] .banner-clay {
+  background-image: linear-gradient(to bottom right, #efe6bf, #ded196 55%, #f7f2e1);
+}
+[data-mode="light"] .banner-steel {
+  background-image: linear-gradient(to bottom right, #dde4ec, #c0cbda 55%, #eff3f8);
+}
