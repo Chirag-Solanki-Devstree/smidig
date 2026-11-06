@@ -116,6 +116,36 @@ and button on a page, scrolls it into view, then measures its box and asks
 `elementFromPoint` what is on top — in a single in-page pass so the element
 cannot move in between. That is what catches "the click does nothing".
 
+### Forms are real now
+
+The first pass shipped **decorative inputs**: the wizard's `Field` had no
+`value` or `onChange` at all, and `Choice` was called with hard-coded values,
+so match type, format, ball type, approval and the ticket toggle rendered
+correctly and did nothing. The suite missed every one of them, because it only
+asserted *renders + clickable + no console errors* — which a dead control
+passes.
+
+Fixed across both wizards and the order screens:
+
+- Every field is controlled; a repo-wide audit now reports **0 inputs without
+  state**.
+- Start/end and registration open/close are real date pickers, with validation
+  that end cannot precede start and registration cannot close before it opens
+  or after the first match.
+- Six banner presets and six logo presets, either replaceable by upload.
+- Ticket types and sponsor tiers can be added, edited and removed.
+- Publishing validates every step, jumps back to the first problem, then saves
+  to `localStorage` and navigates to the list, where the new tournament appears
+  with a *Just created* badge and survives a refresh.
+- Team registration validates name, three-letter code, city, email and a squad
+  of at least eleven.
+- Order searches and filters on both consoles actually narrow the table; the
+  home search carries its terms to `/tournaments` as URL params.
+
+`tests/wizard.spec.ts` asserts **state changes** rather than presence — that a
+click flips `aria-pressed`, that a bad date blocks the step, that adding a row
+changes the count.
+
 ### What the tests found
 
 1. **Content could land under the fixed bars.** Anything the browser scrolled

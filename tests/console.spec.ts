@@ -94,14 +94,15 @@ test.describe("organizer dashboard", () => {
     await expect(strip.locator("> span")).toHaveCount(before);
   });
 
-  test("creation wizard steps through all seven", async ({ page }) => {
+  test("creation wizard opens on step one and will not skip ahead empty", async ({ page }) => {
     await page.goto("/dashboard/tournaments/new");
     await expect(page.getByText("Step 1 of 7")).toBeVisible();
-    for (let i = 0; i < 6; i++) {
-      await page.getByRole("button", { name: "Save and continue" }).click();
-    }
-    await expect(page.getByText("Before you publish")).toBeVisible();
-    await expect(page.getByRole("button", { name: "Publish to marketplace" })).toBeVisible();
+
+    // Validation holds the step until the required fields are filled.
+    // tests/wizard.spec.ts walks the whole flow with real values.
+    await page.getByTestId("continue").click();
+    await expect(page.getByText("Step 1 of 7")).toBeVisible();
+    await expect(page.getByTestId("name-error")).toBeVisible();
   });
 
   test("wizard sport picker: cricket on, others disabled", async ({ page }) => {

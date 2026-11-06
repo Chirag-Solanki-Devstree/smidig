@@ -168,6 +168,11 @@ test.describe("registration wizard", () => {
     await page.goto("/t/deccan-premier-league-2026/register");
     await expect(page.getByText("Team details")).toBeVisible();
 
+    await page.getByTestId("team-name").fill("Thane Titans");
+    await page.getByTestId("team-short").fill("THA");
+    await page.getByTestId("team-city").fill("Thane");
+    await page.getByTestId("team-email").fill("captain@titans.in");
+
     await page.getByRole("button", { name: "Continue" }).click();
     await expect(page.getByRole("heading", { name: "Squad" })).toBeVisible();
 

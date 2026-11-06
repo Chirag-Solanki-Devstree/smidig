@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import { motion } from "motion/react";
 import { ArrowRight, MapPin, Search } from "lucide-react";
 import { TextReveal } from "@/components/fx/text-reveal";
@@ -14,6 +15,8 @@ const EASE = [0.22, 1, 0.36, 1] as const;
 export function MarketHero() {
   const router = useRouter();
   const toast = useToast();
+  const [query, setQuery] = useState("");
+  const [city, setCity] = useState("");
   return (
     <section className="relative pt-32 pb-10 sm:pt-40">
       <div className="shell">
@@ -55,13 +58,21 @@ export function MarketHero() {
             transition={{ duration: 0.8, ease: EASE, delay: 0.9 }}
             onSubmit={(e) => {
               e.preventDefault();
-              router.push("/tournaments");
+              // Carry the terms through so browse opens already filtered.
+              const params = new URLSearchParams();
+              if (query.trim()) params.set("q", query.trim());
+              if (city.trim()) params.set("city", city.trim());
+              const qs = params.toString();
+              router.push(qs ? `/tournaments?${qs}` : "/tournaments");
             }}
             className="group mx-auto mt-9 flex max-w-xl flex-col gap-2 rounded-2xl border border-line bg-[color-mix(in_oklab,var(--bg-elev)_78%,transparent)] p-2 transition-[border-color,box-shadow] duration-[var(--dur)] focus-within:border-[var(--accent)] focus-within:shadow-[0_0_0_4px_color-mix(in_oklab,var(--accent)_12%,transparent)] sm:flex-row"
           >
             <label className="flex flex-1 items-center gap-2.5 rounded-xl px-3 py-2.5">
               <Search size={16} className="shrink-0 text-fg-subtle" />
               <input
+                data-testid="hero-q"
+                value={query}
+                onChange={(e) => setQuery(e.target.value)}
                 placeholder="Tournament, club or sport"
                 className="w-full bg-transparent text-[14px] outline-none placeholder:text-fg-subtle"
               />
@@ -70,6 +81,9 @@ export function MarketHero() {
             <label className="flex items-center gap-2.5 rounded-xl px-3 py-2.5 sm:w-44">
               <MapPin size={16} className="shrink-0 text-fg-subtle" />
               <input
+                data-testid="hero-city"
+                value={city}
+                onChange={(e) => setCity(e.target.value)}
                 placeholder="City"
                 className="w-full bg-transparent text-[14px] outline-none placeholder:text-fg-subtle"
               />
@@ -92,8 +106,8 @@ export function MarketHero() {
               <button
                 key={p}
                 onClick={() => {
-                  toast({ title: `Filtering by ${p}`, body: "Opening browse with that filter applied.", tone: "info" });
-                  router.push("/tournaments");
+                  const key = ["Mumbai"].includes(p) ? "city" : "q";
+                  router.push(`/tournaments?${key}=${encodeURIComponent(p)}`);
                 }}
                 className="wipe-underline text-fg-muted transition-colors duration-[var(--dur)] hover:text-fg"
               >

@@ -1,6 +1,7 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
+import { useSearchParams } from "next/navigation";
 import { AnimatePresence, motion } from "motion/react";
 import { Search, SlidersHorizontal, X } from "lucide-react";
 import { TournamentCard } from "@/components/cards/tournament-card";
@@ -15,12 +16,23 @@ const FEES = ["Any entry", "Free", "Paid"];
 const STATUSES = ["Any status", "Registration open", "Ongoing", "Completed"];
 
 export function BrowseClient() {
+  const params = useSearchParams();
   const [q, setQ] = useState("");
   const [city, setCity] = useState(CITIES[0]);
   const [format, setFormat] = useState(FORMATS[0]);
   const [fee, setFee] = useState(FEES[0]);
   const [status, setStatus] = useState(STATUSES[0]);
   const [panel, setPanel] = useState(false);
+
+  // Seed from the URL so a search from the home page lands already filtered,
+  // and a filtered link is shareable.
+  useEffect(() => {
+    const urlQ = params.get("q");
+    const urlCity = params.get("city");
+    if (urlQ) setQ(urlQ);
+    if (urlCity && CITIES.includes(urlCity)) setCity(urlCity);
+    else if (urlCity) setQ((cur) => cur || urlCity);
+  }, [params]);
 
   const results = useMemo(() => {
     return TOURNAMENTS.filter((t) => {

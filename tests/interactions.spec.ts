@@ -49,6 +49,10 @@ test.describe("public actions respond", () => {
 
   test("registration payment confirms", async ({ page }) => {
     await page.goto("/t/deccan-premier-league-2026/register");
+    await page.getByTestId("team-name").fill("Thane Titans");
+    await page.getByTestId("team-short").fill("THA");
+    await page.getByTestId("team-city").fill("Thane");
+    await page.getByTestId("team-email").fill("captain@titans.in");
     for (let i = 0; i < 3; i++) await page.getByRole("button", { name: "Continue" }).click();
     await page.getByTestId("pay").click();
     await expect(toast(page)).toContainText("Entry confirmed");
@@ -134,14 +138,12 @@ test.describe("organizer actions respond", () => {
     await expect(toast(page)).toContainText("Innings ended");
   });
 
-  test("publish a tournament from the wizard", async ({ page }) => {
+  test("publish refuses an incomplete tournament and says why", async ({ page }) => {
     await page.goto("/dashboard/tournaments/new");
-    for (let i = 0; i < 6; i++) {
-      await page.getByRole("button", { name: "Save and continue" }).click();
-    }
-    await page.getByTestId("publish").click();
-    await expect(toast(page)).toContainText("Tournament published");
-    await expect(page.getByTestId("publish")).toContainText("Published");
+    await page.getByTestId("step-6").click();
+    // Guarded: it never reaches review, and explains what is missing.
+    await expect(toast(page)).toContainText("Check this step");
+    await expect(page.getByTestId("name-error")).toBeVisible();
   });
 });
 

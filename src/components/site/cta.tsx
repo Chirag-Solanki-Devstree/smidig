@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import { Magnetic } from "@/components/fx/magnetic";
 import { Reveal, RevealItem } from "@/components/fx/reveal";
 import { Parallax } from "@/components/fx/parallax";
@@ -8,6 +9,7 @@ import { useToast } from "@/components/kit/toast";
 
 export function Cta() {
   const toast = useToast();
+  const [email, setEmail] = useState("");
   return (
     <section id="cta" className="relative py-24 sm:py-32">
       <div className="shell">
@@ -40,15 +42,23 @@ export function Cta() {
             </RevealItem>
             <RevealItem>
               <form
+                noValidate
                 className="mx-auto mt-9 flex max-w-md flex-col gap-2.5 sm:flex-row"
                 onSubmit={(e) => {
                   e.preventDefault();
-                  toast({ title: "You are on the list", body: "We onboard a handful of organizers each week.", tone: "ok" });
+                  if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email.trim())) {
+                    toast({ title: "Check that address", body: "Enter a valid email so we can reach you.", tone: "warn" });
+                    return;
+                  }
+                  toast({ title: "You are on the list", body: `We will email ${email.trim()} when a slot opens.`, tone: "ok" });
+                  setEmail("");
                 }}
               >
                 <input
                   type="email"
-                  required
+                  data-testid="waitlist-email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
                   placeholder="you@yourleague.com"
                   className="h-12 flex-1 rounded-full border border-line bg-surface px-5 text-sm outline-none transition-colors duration-[var(--dur)] placeholder:text-fg-subtle focus:border-[var(--accent)]"
                 />
