@@ -1,0 +1,372 @@
+@import "tailwindcss";
+
+@custom-variant light (&:where([data-mode="light"], [data-mode="light"] *));
+
+/* ==========================================================================
+   TOKENS — floodlit night stadium.
+   Lime = turf under lights. Amber = ball leather. Red = seam.
+   ========================================================================== */
+:root {
+  --bg: #060a08;
+  --bg-elev: #0b110e;
+  --surface: rgba(255, 255, 255, 0.035);
+  --surface-strong: rgba(255, 255, 255, 0.07);
+  --border: rgba(255, 255, 255, 0.09);
+  --border-strong: rgba(255, 255, 255, 0.2);
+
+  --fg: #f2f6f1;
+  --fg-muted: #9fae9f;
+  --fg-subtle: #6a7a6c;
+
+  --accent: #c8ff2e;
+  --accent-2: #ff9f3d;
+  --accent-3: #ff4d3d;
+  --accent-fg: #0a1005;
+  --glow: rgba(200, 255, 46, 0.35);
+
+  /* Semantic, sport-neutral. Cricket maps 4s to --info and 6s to --six;
+     other sports reuse the same slots for their own event colours. */
+  --live: #ff4d4d;
+  --info: #4aa3ff;
+  --six: #b06bff;
+  --warn: #ffb020;
+  --ok: #3ddc84;
+
+  --grid-line: rgba(255, 255, 255, 0.04);
+  --shadow-lift: 0 24px 70px -28px rgba(0, 0, 0, 0.95);
+  --noise-opacity: 0.05;
+
+  /* One motion vocabulary for the whole page */
+  --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
+  --dur-fast: 220ms;
+  --dur: 420ms;
+  --dur-slow: 700ms;
+}
+
+[data-mode="light"] {
+  --bg: #f3f6f1;
+  --bg-elev: #ffffff;
+  --surface: rgba(10, 20, 12, 0.028);
+  --surface-strong: rgba(10, 20, 12, 0.055);
+  --border: rgba(10, 20, 12, 0.1);
+  --border-strong: rgba(10, 20, 12, 0.22);
+
+  --fg: #0a130c;
+  --fg-muted: #4b5a4d;
+  --fg-subtle: #7d8c7f;
+
+  --accent: #4d7c0f;
+  --accent-2: #c2600c;
+  --accent-3: #c42a1c;
+  --accent-fg: #ffffff;
+  --glow: rgba(77, 124, 15, 0.26);
+
+  --live: #d92d2d;
+  --info: #1f6fd0;
+  --six: #7c3aed;
+  --warn: #b26a00;
+  --ok: #15803d;
+
+  --grid-line: rgba(10, 20, 12, 0.05);
+  --shadow-lift: 0 24px 60px -30px rgba(10, 40, 15, 0.35);
+  --noise-opacity: 0.025;
+}
+
+@theme inline {
+  --color-bg: var(--bg);
+  --color-bg-elev: var(--bg-elev);
+  --color-surface: var(--surface);
+  --color-surface-strong: var(--surface-strong);
+  --color-line: var(--border);
+  --color-line-strong: var(--border-strong);
+
+  --color-fg: var(--fg);
+  --color-fg-muted: var(--fg-muted);
+  --color-fg-subtle: var(--fg-subtle);
+
+  --color-accent: var(--accent);
+  --color-accent-2: var(--accent-2);
+  --color-accent-3: var(--accent-3);
+  --color-accent-fg: var(--accent-fg);
+
+  --color-live: var(--live);
+  --color-info: var(--info);
+  --color-six: var(--six);
+  --color-warn: var(--warn);
+  --color-ok: var(--ok);
+
+  --font-sans: var(--font-sans-ui);
+  --font-mono: var(--font-mono-ui);
+}
+
+@layer base {
+  html {
+    color-scheme: dark;
+
+    /* Both shells float UI over the page: a pill nav at the top on public
+       pages, a sticky bar on the consoles, and a tab bar at the bottom on
+       phones. Without this, anything the browser scrolls to can land
+       underneath them and become untappable. */
+    scroll-padding-top: 5.5rem;
+    scroll-padding-bottom: 5.5rem;
+  }
+
+  @media (min-width: 768px) {
+    html {
+      scroll-padding-bottom: 1.5rem;
+    }
+  }
+  [data-mode="light"] {
+    color-scheme: light;
+  }
+
+  body {
+    background-color: var(--bg);
+    color: var(--fg);
+    font-family: var(--font-sans-ui), ui-sans-serif, system-ui, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    overflow-x: clip;
+  }
+
+  ::selection {
+    background: var(--accent);
+    color: var(--accent-fg);
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 3px;
+    border-radius: 4px;
+  }
+
+  /* Lenis drives scrolling; it needs these two. */
+  html.lenis,
+  html.lenis body {
+    height: auto;
+  }
+  .lenis.lenis-smooth {
+    scroll-behavior: auto !important;
+  }
+  .lenis.lenis-stopped {
+    overflow: hidden;
+  }
+}
+
+@layer utilities {
+  .display {
+    font-weight: 600;
+    letter-spacing: -0.045em;
+    line-height: 0.95;
+    text-wrap: balance;
+  }
+
+  .text-gradient {
+    background: linear-gradient(
+      100deg,
+      color-mix(in oklab, var(--accent) 88%, white) 0%,
+      var(--accent) 42%,
+      var(--accent-2) 100%
+    );
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+
+  .shell {
+    width: 100%;
+    max-width: 78rem;
+    margin-inline: auto;
+    padding-inline: 1.25rem;
+  }
+  @media (min-width: 768px) {
+    .shell {
+      padding-inline: 2rem;
+    }
+  }
+
+  .grid-bg {
+    background-image:
+      linear-gradient(to right, var(--grid-line) 1px, transparent 1px),
+      linear-gradient(to bottom, var(--grid-line) 1px, transparent 1px);
+    background-size: 64px 64px;
+  }
+
+  /* Cricket pitch stripes, used behind the hero */
+  .turf-bg {
+    background-image: repeating-linear-gradient(
+      100deg,
+      color-mix(in oklab, var(--accent) 5%, transparent) 0px,
+      color-mix(in oklab, var(--accent) 5%, transparent) 56px,
+      transparent 56px,
+      transparent 112px
+    );
+  }
+
+  .mask-fade-y {
+    mask-image: linear-gradient(to bottom, transparent, #000 12%, #000 88%, transparent);
+  }
+  .mask-fade-x {
+    mask-image: linear-gradient(to right, transparent, #000 8%, #000 92%, transparent);
+  }
+
+  /* No backdrop-filter here on purpose. Each blurred layer forces the browser
+     to re-sample everything behind it on every scroll frame, and this class is
+     used on ~25 cards. Plain translucency costs nothing and looks the same. */
+  .glass {
+    background: var(--surface);
+    border: 1px solid var(--border);
+  }
+
+  /* Reserved for the handful of fixed, always-on-top surfaces (the nav, the
+     ticker) where one blurred layer is worth the cost. */
+  .glass-blur {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    backdrop-filter: blur(14px) saturate(140%);
+  }
+
+  /* Sections below the fold skip layout, paint and raster until they approach
+     the viewport. contain-intrinsic-size keeps the scrollbar honest. */
+  .section-cv {
+    content-visibility: auto;
+    contain-intrinsic-size: auto 900px;
+  }
+
+
+  /* ---- marquee / ticker ---- */
+  .marquee-track {
+    animation: marquee var(--marquee-duration, 36s) linear infinite;
+    will-change: transform;
+  }
+  .marquee-track[data-reverse="true"] {
+    animation-direction: reverse;
+  }
+  .marquee-pause:hover .marquee-track {
+    animation-play-state: paused;
+  }
+  @keyframes marquee {
+    from {
+      transform: translate3d(0, 0, 0);
+    }
+    to {
+      transform: translate3d(-50%, 0, 0);
+    }
+  }
+
+  @keyframes shimmer {
+    to {
+      background-position: 200% center;
+    }
+  }
+  .shimmer {
+    background: linear-gradient(
+      100deg,
+      transparent 20%,
+      color-mix(in oklab, var(--accent) 80%, white) 48%,
+      transparent 76%
+    );
+    background-size: 200% auto;
+    -webkit-background-clip: text;
+    background-clip: text;
+    animation: shimmer 4s linear infinite;
+  }
+
+  /* ---- hover: label swaps itself out upward ---- */
+  .swap {
+    position: relative;
+    display: inline-block;
+    overflow: hidden;
+    vertical-align: bottom;
+  }
+  .swap > span {
+    display: block;
+    transition: transform var(--dur) var(--ease-out);
+  }
+  .swap > span:last-child {
+    position: absolute;
+    inset: 0;
+    transform: translateY(105%);
+  }
+  .swap:hover > span:first-child,
+  a:hover .swap > span:first-child,
+  button:hover .swap > span:first-child {
+    transform: translateY(-105%);
+  }
+  .swap:hover > span:last-child,
+  a:hover .swap > span:last-child,
+  button:hover .swap > span:last-child {
+    transform: translateY(0);
+  }
+
+  /* ---- hover: underline wipes in from the left ---- */
+  .wipe-underline {
+    background-image: linear-gradient(var(--accent), var(--accent));
+    background-repeat: no-repeat;
+    background-position: 0 100%;
+    background-size: 0% 1.5px;
+    transition: background-size var(--dur) var(--ease-out);
+  }
+  .wipe-underline:hover {
+    background-size: 100% 1.5px;
+  }
+
+  /* Data-table rows arrive in a short cascade. CSS-only so server-rendered
+     tables get it without shipping a motion component per row. */
+  @keyframes row-in {
+    from {
+      opacity: 0;
+      transform: translateX(-10px);
+    }
+    to {
+      opacity: 1;
+      transform: none;
+    }
+  }
+  .rows-cascade > tr {
+    animation: row-in 480ms var(--ease-out) both;
+  }
+  .rows-cascade > tr:nth-child(1) { animation-delay: 20ms; }
+  .rows-cascade > tr:nth-child(2) { animation-delay: 60ms; }
+  .rows-cascade > tr:nth-child(3) { animation-delay: 100ms; }
+  .rows-cascade > tr:nth-child(4) { animation-delay: 140ms; }
+  .rows-cascade > tr:nth-child(5) { animation-delay: 180ms; }
+  .rows-cascade > tr:nth-child(6) { animation-delay: 220ms; }
+  .rows-cascade > tr:nth-child(7) { animation-delay: 260ms; }
+  .rows-cascade > tr:nth-child(n + 8) { animation-delay: 300ms; }
+
+  /* Ticket stub flips to its QR on hover. */
+  .flip {
+    transform-style: preserve-3d;
+    transition: transform 620ms var(--ease-out);
+  }
+  .flip-host:hover .flip {
+    transform: rotateY(180deg);
+  }
+  .flip-face {
+    backface-visibility: hidden;
+  }
+  .flip-back {
+    transform: rotateY(180deg);
+  }
+
+  .seam-divider {
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--border-strong), transparent);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .marquee-track,
+  .shimmer,
+  .rows-cascade > tr {
+    animation: none !important;
+  }
+  .flip {
+    transition: none !important;
+  }
+  .swap > span,
+  .wipe-underline {
+    transition: none !important;
+  }
+}
