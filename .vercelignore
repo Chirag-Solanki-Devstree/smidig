@@ -1,0 +1,15 @@
+# Only the app source needs to go up. Nothing here is required to build.
+# never upload local secrets
+.env
+.env.*
+
+node_modules
+.next
+out
+test-results
+playwright-report
+blob-report
+playwright/.cache
+tests
+playwright.config.ts
+.claude
