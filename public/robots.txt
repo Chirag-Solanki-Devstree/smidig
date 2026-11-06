@@ -1,0 +1,3 @@
+# Client preview of a prototype — not for indexing.
+User-agent: *
+Disallow: /

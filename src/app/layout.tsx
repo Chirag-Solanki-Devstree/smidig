@@ -21,6 +21,9 @@ export const metadata: Metadata = {
   },
   description:
     "Create and run a tournament for any sport. Teams register, fans buy tickets, sponsors and food vendors book — all in one place.",
+  // Client preview of a prototype: keep it out of search results. Remove this
+  // (and public/robots.txt) when the real product launches.
+  robots: { index: false, follow: false, nocache: true },
 };
 
 const noFlash = `(function(){try{var m=localStorage.getItem("${MODE_KEY}");document.documentElement.setAttribute("data-mode",m==="light"?"light":"dark");}catch(e){}})();`;

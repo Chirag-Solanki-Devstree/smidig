@@ -99,36 +99,6 @@ slides in behind its sidebar, admin opens like a shutter.
 Entrance only — Next's App Router unmounts the old route before the new one
 paints, so exit animations would not reliably play.
 
-## Cursor ball trail
-
-`src/components/fx/ball-trail.tsx`. One cricket ball follows the cursor across
-either hero, trailing fire — white-hot at the ball, cooling through yellow and
-orange to a dark red that fades out. The ball spins by how far it has
-travelled, so it rolls rather than slides.
-
-Built from scratch; the reference library's version is a paid component.
-
-**How it is drawn.** Positions come from a chain of 16 springs, each chasing
-the one ahead of it, so the lag builds naturally and the tail bends through
-corners. Those points are then drawn as **one smooth cubic path in five
-stacked strokes** of decreasing width and increasing brightness, each
-following a shorter stretch of the chain — that is what tapers it.
-
-Drawing a path rather than positioning a row of dots matters: discrete puffs
-break into separate blobs the moment the cursor moves quickly, which is how
-the first two attempts at this failed.
-
-- The path is rewritten imperatively each frame from the spring values, so the
-  whole effect costs **no React render**.
-- No CSS filters. The glow is colour and stroke width, not `blur()`.
-- One layout read per scroll frame, rAF-coalesced; the ball is then re-placed
-  so it stays under the cursor while the page moves.
-- Fine pointers only, and nothing at all under `prefers-reduced-motion`.
-- The layer is `pointer-events: none` and sits behind the hero copy.
-
-Measured over 3s of continuous cursor motion plus 2.5s of hard scrolling:
-median 8.3ms, p99 9.4ms, **0 frames over 20ms**.
-
 ## Tests
 
 `npm test` runs 89 Playwright tests across a desktop and a Pixel 7 project.

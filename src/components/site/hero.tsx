@@ -5,7 +5,6 @@ import { motion, useScroll, useSpring, useTransform } from "motion/react";
 import { TextReveal } from "@/components/fx/text-reveal";
 import { Magnetic } from "@/components/fx/magnetic";
 import { Scorecard } from "@/components/site/scorecard";
-import { BallTrail } from "@/components/fx/ball-trail";
 import { BRAND } from "@/lib/content";
 import { GhostButton, LiveDot, Pill, PrimaryButton, Swap } from "@/components/ui";
 
@@ -27,8 +26,7 @@ export function Hero() {
 
   return (
     <section id="top" className="relative pt-36 pb-12 sm:pt-44">
-      <BallTrail />
-      <div className="shell relative z-10">
+      <div className="shell">
         <div className="mx-auto max-w-3xl text-center">
           <motion.div
             initial={{ opacity: 0, y: 14 }}

@@ -7,7 +7,6 @@ import { Magnetic } from "@/components/fx/magnetic";
 import { Button } from "@/components/kit";
 import { LiveDot, Pill } from "@/components/ui";
 import { useToast } from "@/components/kit/toast";
-import { BallTrail } from "@/components/fx/ball-trail";
 import { useRouter } from "next/navigation";
 
 const EASE = [0.22, 1, 0.36, 1] as const;
@@ -17,9 +16,7 @@ export function MarketHero() {
   const toast = useToast();
   return (
     <section className="relative pt-32 pb-10 sm:pt-40">
-      {/* Balls drop behind the copy as the cursor crosses the hero. */}
-      <BallTrail />
-      <div className="shell relative z-10">
+      <div className="shell">
         <div className="mx-auto max-w-3xl text-center">
           <motion.div
             initial={{ opacity: 0, y: 14 }}
