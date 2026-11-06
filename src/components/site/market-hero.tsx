@@ -1,7 +1,7 @@
 "use client";
 
-import { useState } from "react";
-import { motion } from "motion/react";
+import { useRef, useState } from "react";
+import { motion, useReducedMotion, useScroll, useSpring, useTransform } from "motion/react";
 import { ArrowRight, MapPin, Search } from "lucide-react";
 import { TextReveal } from "@/components/fx/text-reveal";
 import { Magnetic } from "@/components/fx/magnetic";
@@ -17,10 +17,36 @@ export function MarketHero() {
   const toast = useToast();
   const [query, setQuery] = useState("");
   const [city, setCity] = useState("");
+  // The hero settles back and fades as the page scrolls past it, so the
+  // sections below arrive over it instead of sliding up against a wall of
+  // text. Driven by MotionValues straight onto transform and opacity: no
+  // React state, so nothing re-renders while the page is moving, and both
+  // properties stay on the compositor.
+  //
+  // Measured against the hero's own box rather than pixel constants, because
+  // the hero is 715px on this viewport and far shorter on a phone. Progress
+  // runs 0 to 1 as the hero scrolls fully past the top of the screen, and the
+  // fade is held off until 0.66 of that — the point where the search field has
+  // finally passed under the nav. An earlier version faded on absolute scroll
+  // and had the hero at 43% opacity while its search box was still sitting in
+  // the middle of the screen, which reads as a bug rather than as depth.
+  const heroRef = useRef<HTMLElement>(null);
+  const reduce = useReducedMotion();
+  const { scrollYProgress } = useScroll({
+    target: heroRef,
+    offset: ["start start", "end start"],
+  });
+  const lift = useTransform(scrollYProgress, [0, 1], [0, -70]);
+  const dim = useTransform(scrollYProgress, [0.66, 1], [1, 0]);
+  const heroY = useSpring(lift, { stiffness: 120, damping: 28, mass: 0.5 });
+
   return (
-    <section className="relative pt-32 pb-10 sm:pt-40">
+    <section ref={heroRef} className="relative pt-32 pb-10 sm:pt-40">
       <div className="shell">
-        <div className="mx-auto max-w-3xl text-center">
+        <motion.div
+          style={reduce ? undefined : { y: heroY, opacity: dim }}
+          className="mx-auto max-w-3xl text-center"
+        >
           <motion.div
             initial={{ opacity: 0, y: 14 }}
             animate={{ opacity: 1, y: 0 }}
@@ -129,7 +155,7 @@ export function MarketHero() {
               Host a tournament <ArrowRight size={14} />
             </Button>
           </motion.div>
-        </div>
+        </motion.div>
       </div>
     </section>
   );

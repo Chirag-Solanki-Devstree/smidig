@@ -4,6 +4,7 @@ import { MarketHero } from "@/components/site/market-hero";
 import { SportChips } from "@/components/site/sport-chips";
 import { LiveRail } from "@/components/site/live-rail";
 import { Reveal, RevealItem } from "@/components/fx/reveal";
+import { Parallax } from "@/components/fx/parallax";
 import { TournamentCard } from "@/components/cards/tournament-card";
 import { Button, Card, SectionHeading } from "@/components/kit";
 import { TOURNAMENTS } from "@/lib/data";
@@ -127,10 +128,15 @@ export default function HomePage() {
 
       <section className="shell pb-20">
         <div className="relative overflow-hidden rounded-[28px] border border-line px-6 py-14 text-center sm:px-14">
-          <div
-            aria-hidden
-            className="absolute inset-0 -z-10 bg-[radial-gradient(70%_120%_at_50%_0%,color-mix(in_oklab,var(--accent)_22%,transparent),transparent_70%)]"
-          />
+          {/* The glow drifts against the scroll, so the panel reads as having
+              depth rather than being a flat block. Decorative and aria-hidden;
+              Parallax moves it with a transform only. */}
+          <Parallax distance={26} className="pointer-events-none absolute inset-0 -z-10">
+            <div
+              aria-hidden
+              className="absolute inset-0 bg-[radial-gradient(70%_120%_at_50%_0%,color-mix(in_oklab,var(--accent)_22%,transparent),transparent_70%)]"
+            />
+          </Parallax>
           <div aria-hidden className="absolute inset-0 -z-10 turf-bg opacity-60" />
           <h2 className="display mx-auto max-w-2xl text-[clamp(1.8rem,4.6vw,3rem)]">
             Running a tournament? <span className="text-gradient">Put it on Smidig.</span>

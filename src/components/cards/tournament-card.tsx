@@ -32,7 +32,16 @@ export function TournamentCard({ t }: { t: Tournament }) {
       className="group relative flex h-full flex-col overflow-hidden rounded-2xl border border-line bg-[color-mix(in_oklab,var(--bg-elev)_82%,transparent)] transition-[transform,border-color,box-shadow] duration-[var(--dur)] ease-[var(--ease-out)] hover:-translate-y-1 hover:border-line-strong hover:shadow-[0_24px_60px_-30px_var(--glow)]"
     >
       {/* banner */}
-      <div className={cx("relative h-32", t.banner)}>
+      {/* The card clips, so the banner can push past its own box on hover.
+          Transform only, and only on this 128px strip — a scale on a large
+          gradient layer forces a re-raster, which is why the page backdrop
+          is left alone. */}
+      <div
+        className={cx(
+          "relative h-32 origin-center transition-transform duration-[var(--dur-slow)] ease-[var(--ease-out)] group-hover:scale-[1.06]",
+          t.banner,
+        )}
+      >
         <div className="absolute inset-0 turf-bg opacity-50" />
         <div className="absolute inset-0 bg-[linear-gradient(to_top,var(--bg-elev),transparent_70%)]" />
         <div className="absolute inset-x-3 top-3 flex items-start justify-between gap-2">

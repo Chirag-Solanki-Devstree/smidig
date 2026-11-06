@@ -11,7 +11,9 @@ export function ScrollProgress() {
     <motion.div
       aria-hidden
       style={{ scaleX: x }}
-      className="fixed inset-x-0 top-0 z-[60] h-[2px] origin-left bg-[linear-gradient(90deg,var(--accent),var(--accent-2),var(--accent-3))]"
+      // pointer-events-none matters: this sits above the nav at z-60, and
+      // without it the top 2px of the nav stops taking clicks.
+      className="pointer-events-none fixed inset-x-0 top-0 z-[60] h-[2px] origin-left bg-[linear-gradient(90deg,var(--accent),var(--accent-2),var(--accent-3))]"
     />
   );
 }
