@@ -1,7 +1,33 @@
-import { test, expect, type Page } from "@playwright/test";
+import { test, expect, type CDPSession, type Page } from "@playwright/test";
 
 /** Same measurement on a phone profile, where the budget is tightest. */
 const CPU_SLOWDOWN = 4;
+
+/**
+ * A real one-finger flick, dispatched as touch events.
+ *
+ * This replaces a `touchscreen.tap()` + `mouse.wheel()` pair that used to stand
+ * in for a phone scroll. The tap was not a scroll at all: on the home page it
+ * landed on the live-match card and navigated away mid-measurement, so the
+ * numbers for `/` were timing a route transition and reported an 83ms frame
+ * that had nothing to do with scrolling. A drag that moves past the slop
+ * threshold cannot fire a click, and it exercises Lenis' touch path rather
+ * than its wheel path, which is what a phone actually uses.
+ */
+async function flick(client: CDPSession, x: number, from: number, distance: number) {
+  await client.send("Input.dispatchTouchEvent", {
+    type: "touchStart",
+    touchPoints: [{ x, y: from }],
+  });
+  const steps = 10;
+  for (let i = 1; i <= steps; i++) {
+    await client.send("Input.dispatchTouchEvent", {
+      type: "touchMove",
+      touchPoints: [{ x, y: Math.round(from - (distance * i) / steps) }],
+    });
+  }
+  await client.send("Input.dispatchTouchEvent", { type: "touchEnd", touchPoints: [] });
+}
 
 async function measure(page: Page, path: string) {
   const client = await page.context().newCDPSession(page);
@@ -23,12 +49,15 @@ async function measure(page: Page, path: string) {
 
   // Touch flicks, not wheel — that is how a phone is actually scrolled.
   const h = page.viewportSize()!.height;
+  const urlBefore = page.url();
   for (let i = 0; i < 8; i++) {
-    await page.touchscreen.tap(200, Math.round(h * 0.5)).catch(() => {});
-    await page.mouse.wheel(0, 500);
+    await flick(client, 200, Math.round(h * 0.78), Math.round(h * 0.55));
     await page.waitForTimeout(90);
   }
   await page.waitForTimeout(900);
+  // A gesture that navigates is not a scroll measurement. Fail loudly instead
+  // of quietly reporting frame times for a different page.
+  expect(page.url(), `${path} navigated away mid-measurement`).toBe(urlBefore);
 
   const raw = await page.evaluate(() => {
     const w = window as unknown as { __f: number[]; __stop?: boolean };

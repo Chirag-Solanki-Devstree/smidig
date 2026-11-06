@@ -11,6 +11,7 @@ import {
   YAxis,
 } from "recharts";
 import { REVENUE_BY_DAY } from "@/lib/data";
+import { formatMoney, money } from "@/lib/money";
 
 
 const FLOWS = [
@@ -30,10 +31,10 @@ export function RevenueChart() {
   // was worth an 83ms frame on a throttled machine. The card moves, the chart
   // rides along.
   return (
-    // Note: the first scroll that brings this chart into view costs one long
-    // frame while its SVG is rasterised — 33ms unthrottled, 66ms at 4x CPU.
-    // Every scroll after that is clean. Promoting it early with will-change
-    // was tried and changed nothing, so it is not carried here.
+    // The tooltip formatter runs while the pointer is over the chart, which
+    // on a short page means while the user is still scrolling. It must stay
+    // allocation-free: formatMoney reuses a module-scope Intl formatter, and
+    // building one per call here cost a dropped frame on every pass.
     <div className="h-64 w-full">
       <ResponsiveContainer width="100%" height="100%">
         <BarChart data={REVENUE_BY_DAY} margin={{ top: 8, right: 8, bottom: 0, left: -16 }}>
@@ -48,7 +49,10 @@ export function RevenueChart() {
             tick={{ fill: "var(--fg-subtle)", fontSize: 11 }}
             axisLine={false}
             tickLine={false}
-            tickFormatter={(v) => `₹${v / 1000}k`}
+            // Minor units, like every other amount in the app: this axis used
+            // to divide by 1000 and label paise as rupees, so it read "₹120k"
+            // against a tooltip saying "₹1,200" for the same bar.
+            tickFormatter={(v) => formatMoney(money(Number(v)), { compact: true })}
           />
           <Tooltip
             cursor={{ fill: "color-mix(in oklab, var(--fg) 6%, transparent)" }}
@@ -59,7 +63,7 @@ export function RevenueChart() {
               fontSize: 12,
               color: "var(--fg)",
             }}
-            formatter={(v, n) => [`₹${(Number(v) / 100).toLocaleString("en-IN")}`, String(n)]}
+            formatter={(v, n) => [formatMoney(money(Number(v))), String(n)]}
           />
           <Legend
             iconType="circle"

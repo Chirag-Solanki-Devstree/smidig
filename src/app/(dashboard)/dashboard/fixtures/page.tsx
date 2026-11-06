@@ -14,6 +14,7 @@ import {
 } from "@/components/kit";
 import { ActionButton } from "@/components/kit/action-button";
 import { MATCHES, teamByShort } from "@/lib/data";
+import { formatMatchTime } from "@/lib/money";
 
 export const metadata = { title: "Fixtures" };
 
@@ -85,12 +86,7 @@ export default function Page() {
                   </Td>
                   <Td className="text-fg-muted">{m.stage}</Td>
                   <Td className="font-mono text-[12px] text-fg-muted">
-                    {new Date(m.startsAt).toLocaleString("en-GB", {
-                      day: "numeric",
-                      month: "short",
-                      hour: "2-digit",
-                      minute: "2-digit",
-                    })}
+                    {formatMatchTime(m.startsAt)}
                   </Td>
                   <Td className="text-fg-muted">
                     {m.no === 16 ? (

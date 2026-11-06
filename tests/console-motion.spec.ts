@@ -1,5 +1,31 @@
-import { expect, test } from "@playwright/test";
+import { expect, test, type Page } from "@playwright/test";
 import { signInAs } from "./helpers";
+
+/**
+ * Scroll the way a person does, with wheel input.
+ *
+ * These specs are the ones that run with motion ENABLED, which means Lenis is
+ * driving the scroll position. Lenis writes its own target to the window on
+ * every frame, so a bare `window.scrollTo` is undone on the next one: whether
+ * it stuck depended on whether hydration had finished yet, which made the
+ * reveal assertions flaky under parallel load. Wheel input goes through Lenis
+ * instead of fighting it, and polling lets the inertia settle.
+ */
+async function scrollBy(page: Page, px: number) {
+  await page.mouse.move(700, 400);
+  const steps = Math.max(1, Math.ceil(px / 600));
+  for (let i = 0; i < steps; i++) {
+    await page.mouse.wheel(0, Math.min(600, px));
+    await page.waitForTimeout(80);
+  }
+  await page.waitForTimeout(400);
+}
+
+async function scrollToBottom(page: Page) {
+  const target = await page.evaluate(() => document.body.scrollHeight);
+  await scrollBy(page, target);
+  await page.waitForTimeout(300);
+}
 
 /**
  * The rest of the suite runs with reduced motion, where every reveal
@@ -31,7 +57,7 @@ test.describe("console scroll motion", () => {
   test("nothing below the fold stays invisible after scrolling to it", async ({ page }) => {
     await signInAs(page, "organizer");
     await page.goto("/dashboard");
-    await page.evaluate(() => window.scrollTo(0, document.body.scrollHeight));
+    await scrollToBottom(page);
     await page.waitForTimeout(1200);
 
     const hidden = await page.evaluate(() => {
@@ -54,7 +80,7 @@ test.describe("console scroll motion", () => {
   test("table rows become visible once the table is reached", async ({ page }) => {
     await signInAs(page, "organizer");
     await page.goto("/dashboard/orders");
-    await page.evaluate(() => window.scrollTo(0, document.body.scrollHeight));
+    await scrollToBottom(page);
     await page.waitForTimeout(1200);
 
     await expect(page.locator("tbody.rows-cascade")).toHaveClass(/\bin\b/);
@@ -71,7 +97,7 @@ test.describe("console scroll motion", () => {
     const header = page.locator("header").first();
     const tall = await header.evaluate((el) => el.getBoundingClientRect().height);
 
-    await page.evaluate(() => window.scrollTo(0, 400));
+    await scrollBy(page, 400);
     await expect.poll(() =>
       header.evaluate((el) => el.getBoundingClientRect().height),
     ).toBeLessThan(tall);
@@ -97,7 +123,7 @@ test.describe("public scroll motion", () => {
 
   test("browse cards reveal as you scroll, none left transparent", async ({ page }) => {
     await page.goto("/tournaments");
-    await page.evaluate(() => window.scrollTo(0, document.body.scrollHeight));
+    await scrollToBottom(page);
     await page.waitForTimeout(1400);
 
     const hidden = await page.evaluate(() => {
@@ -113,20 +139,20 @@ test.describe("public scroll motion", () => {
 
   test("ticket wallet cards reveal", async ({ page }) => {
     await page.goto("/me/tickets");
-    await page.evaluate(() => window.scrollTo(0, document.body.scrollHeight));
+    await scrollToBottom(page);
     await page.waitForTimeout(1200);
     await expect(page.getByText("SMD-10482").first()).toBeVisible();
   });
 
   test("section rules draw in on the home page", async ({ page }) => {
     await page.goto("/");
-    await page.evaluate(() => window.scrollTo(0, 900));
+    await scrollBy(page, 900);
     await expect.poll(() => page.locator(".rule.in").count()).toBeGreaterThan(0);
   });
 
   test("match page panels reveal", async ({ page }) => {
     await page.goto("/t/deccan-premier-league-2026/m/14");
-    await page.evaluate(() => window.scrollTo(0, document.body.scrollHeight));
+    await scrollToBottom(page);
     await page.waitForTimeout(1200);
     await expect(page.getByText("Commentary")).toBeVisible();
 

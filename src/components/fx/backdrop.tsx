@@ -25,6 +25,12 @@ export function Backdrop() {
       aria-hidden
       className={className}
       style={{ willChange: "transform" }}
+      // These three pools are ~800px of radial gradient each, so they were the
+      // obvious suspect for the last long frame on a throttled scroll. Measured
+      // over six passes: hiding them outright saves ~11ms of total excess
+      // across a two-second scroll and does not change how many frames run
+      // long (2.2 vs 2.3). Dropping just the `scale` saved nothing at all.
+      // Both were tried and reverted — the cost is not here.
       animate={reduce ? undefined : { x: [0, to[0], 0], y: [0, to[1], 0], scale: [1, 1.12, 1] }}
       transition={{ duration: dur, repeat: Infinity, ease: "easeInOut" }}
     />

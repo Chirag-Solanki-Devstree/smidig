@@ -11,6 +11,7 @@ import { Confetti } from "@/components/fx/confetti";
 import { SPORTS, SPORT_BY_ID, type SportId } from "@/lib/sports";
 import { BANNER_PRESETS, LOGO_PRESETS, bannerById, logoById } from "@/lib/presets";
 import { addDraft, slugify } from "@/lib/drafts";
+import { formatNumber } from "@/lib/money";
 import { cx } from "@/lib/cx";
 
 const STEPS = [
@@ -460,7 +461,7 @@ function PreviewDialog({ form, onClose }: { form: Form; onClose: () => void }) {
               </span>
               <span className="font-semibold">
                 {Number(form.entryFee) > 0
-                  ? `${form.currency} ${Number(form.entryFee).toLocaleString("en-IN")} entry`
+                  ? `${form.currency} ${formatNumber(Number(form.entryFee))} entry`
                   : "Free entry"}
               </span>
             </div>
@@ -804,7 +805,7 @@ function Registration({ form, set, errors }: { form: Form; set: Setter; errors: 
         <AlertTriangle size={16} className="mt-0.5 shrink-0 text-[var(--accent)]" />
         <p className="text-[12.5px] leading-relaxed text-fg-muted" data-testid="fee-preview">
           {fee > 0
-            ? `Smidig keeps 5% of each entry fee. On a ${form.currency} ${fee.toLocaleString("en-IN")} entry you receive ${form.currency} ${(fee - smidigFee).toLocaleString("en-IN")} and Smidig earns ${form.currency} ${smidigFee.toLocaleString("en-IN")}.`
+            ? `Smidig keeps 5% of each entry fee. On a ${form.currency} ${formatNumber(fee)} entry you receive ${form.currency} ${formatNumber(fee - smidigFee)} and Smidig earns ${form.currency} ${formatNumber(smidigFee)}.`
             : "Free entry — no payment is taken and Smidig charges nothing."}
         </p>
       </Card>
@@ -1047,7 +1048,7 @@ function Review({ form, sport }: { form: Form; sport: (typeof SPORT_BY_ID)[Sport
               ["Ball", form.ballType],
               ["Dates", form.start && form.end ? `${form.start} → ${form.end}` : "—"],
               ["Registration", form.regOpen && form.regClose ? `${form.regOpen} → ${form.regClose}` : "—"],
-              ["Entry fee", Number(form.entryFee) > 0 ? `${form.currency} ${Number(form.entryFee).toLocaleString("en-IN")}` : "Free"],
+              ["Entry fee", Number(form.entryFee) > 0 ? `${form.currency} ${formatNumber(Number(form.entryFee))}` : "Free"],
               ["Approval", form.approval === "manual" ? "Manual" : "Automatic"],
               ["Max teams", form.maxTeams],
               ["Tickets", form.sellTickets === "yes" ? `${form.tickets.length} type(s)` : "Not selling"],
