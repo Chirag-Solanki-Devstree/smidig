@@ -99,6 +99,30 @@ slides in behind its sidebar, admin opens like a shutter.
 Entrance only — Next's App Router unmounts the old route before the new one
 paints, so exit animations would not reliably play.
 
+## Scroll choreography
+
+Both surfaces reveal as you reach them, rather than playing every entrance on
+mount where nobody sees it.
+
+- Sections and grids rise into place on first sight; children stagger via a CSS
+  variable, so the delay costs no JS per child.
+- Table rows hold their cascade until the table is in view.
+- Stat cards carry a sparkline that draws itself; the revenue chart animates
+  when reached.
+- Section rules draw out under their heading.
+- The console header condenses past 60px and carries a scroll rail.
+
+All of it is one IntersectionObserver per element plus transform/opacity, so
+scrolling stays on the compositor. Measured on a production build: dashboard
+and home both **median 8.3ms, p99 9.3ms, 0 frames over 20ms**.
+
+Hidden-until-revealed states are scoped to `html.js`, set before first paint,
+so without scripting the content is simply visible.
+
+**Deliberately not taken** from the reference library: WebGL shaders, physics,
+3D card scatter, kinetic type, image-collage sliders. They are portfolio
+effects; in a screen built for reading data they cost frames and hurt scanning.
+
 ## Tests
 
 `npm test` runs 89 Playwright tests across a desktop and a Pixel 7 project.
@@ -110,6 +134,11 @@ paints, so exit animations would not reliably play.
 | `tests/interactions.spec.ts` | every control that has no backend still answers the click |
 | `tests/console.spec.ts` | all 12 organizer routes and 4 admin routes render with no console errors; sidebar, scoring keypad, undo, 7-step wizard, scanner, fee preview |
 | `tests/mobile.spec.ts` | bottom tab bar, hamburger menu, reachability at phone width |
+
+`tests/console-motion.spec.ts` runs with **motion enabled**, unlike the rest of
+the suite. That matters: reduced motion short-circuits every reveal to its end
+state, so a completely broken IntersectionObserver would otherwise ship green —
+which nearly happened.
 
 `tests/helpers.ts` holds `expectAllClickablesHittable`, which walks every link
 and button on a page, scrolls it into view, then measures its box and asks

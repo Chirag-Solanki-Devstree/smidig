@@ -37,6 +37,7 @@ import {
   tournamentBySlug,
 } from "@/lib/data";
 import { useToast } from "@/components/kit/toast";
+import { Rise } from "@/components/fx/reveal-on-scroll";
 import { cx } from "@/lib/cx";
 
 const TABS = [
@@ -202,7 +203,8 @@ function Overview({ t }: { t: ReturnType<typeof tournamentBySlug> }) {
   if (!t) return null;
   return (
     <div className="grid gap-4 lg:grid-cols-3">
-      <Card className="p-6 lg:col-span-2">
+      <Rise className="lg:col-span-2">
+      <Card className="h-full p-6">
         <h3 className="text-[15px] font-semibold">Rules & format</h3>
         <ul className="mt-4 space-y-2.5 text-[13.5px] text-fg-muted">
           {[
@@ -220,6 +222,7 @@ function Overview({ t }: { t: ReturnType<typeof tournamentBySlug> }) {
           ))}
         </ul>
       </Card>
+      </Rise>
 
       <div className="space-y-4">
         <Card className="p-5">

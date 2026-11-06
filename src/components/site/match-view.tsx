@@ -30,6 +30,7 @@ import {
 } from "@/lib/data";
 import { formatMoney, splitFee } from "@/lib/money";
 import { useToast } from "@/components/kit/toast";
+import { Rise } from "@/components/fx/reveal-on-scroll";
 import { cx } from "@/lib/cx";
 
 export function MatchView({ slug, no }: { slug: string; no: number }) {
@@ -132,6 +133,7 @@ export function MatchView({ slug, no }: { slug: string; no: number }) {
           </Card>
 
           {/* scorecard */}
+          <Rise>
           <Card className="overflow-hidden">
             <p className="border-b border-line px-5 py-3 text-[13px] font-semibold">
               Batting · {A.name}
@@ -194,8 +196,10 @@ export function MatchView({ slug, no }: { slug: string; no: number }) {
               </Tbody>
             </Table>
           </Card>
+          </Rise>
 
           {/* commentary */}
+          <Rise>
           <Card className="p-5">
             <p className="text-[13px] font-semibold">Commentary</p>
             <ul className="mt-4 space-y-3">
@@ -226,6 +230,7 @@ export function MatchView({ slug, no }: { slug: string; no: number }) {
               ))}
             </ul>
           </Card>
+          </Rise>
         </div>
 
         {/* ticket box + sponsors */}

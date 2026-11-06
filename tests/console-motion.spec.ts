@@ -91,3 +91,64 @@ test.describe("console scroll motion", () => {
     await ctx.close();
   });
 });
+
+test.describe("public scroll motion", () => {
+  test.use({ reducedMotion: "no-preference" });
+
+  test("browse cards reveal as you scroll, none left transparent", async ({ page }) => {
+    await page.goto("/tournaments");
+    await page.evaluate(() => window.scrollTo(0, document.body.scrollHeight));
+    await page.waitForTimeout(1400);
+
+    const hidden = await page.evaluate(() => {
+      const cards = [...document.querySelectorAll<HTMLElement>("a[href^='/t/']")];
+      return cards.filter((el) => {
+        const r = el.getBoundingClientRect();
+        const onScreen = r.top < innerHeight && r.bottom > 0;
+        return onScreen && Number(getComputedStyle(el).opacity) < 0.9;
+      }).length;
+    });
+    expect(hidden, "on-screen cards must not be left transparent").toBe(0);
+  });
+
+  test("ticket wallet cards reveal", async ({ page }) => {
+    await page.goto("/me/tickets");
+    await page.evaluate(() => window.scrollTo(0, document.body.scrollHeight));
+    await page.waitForTimeout(1200);
+    await expect(page.getByText("SMD-10482").first()).toBeVisible();
+  });
+
+  test("section rules draw in on the home page", async ({ page }) => {
+    await page.goto("/");
+    await page.evaluate(() => window.scrollTo(0, 900));
+    await expect.poll(() => page.locator(".rule.in").count()).toBeGreaterThan(0);
+  });
+
+  test("match page panels reveal", async ({ page }) => {
+    await page.goto("/t/deccan-premier-league-2026/m/14");
+    await page.evaluate(() => window.scrollTo(0, document.body.scrollHeight));
+    await page.waitForTimeout(1200);
+    await expect(page.getByText("Commentary")).toBeVisible();
+
+    const hidden = await page.evaluate(() => {
+      const els = [...document.querySelectorAll<HTMLElement>(".rise")];
+      return els.filter((el) => {
+        const r = el.getBoundingClientRect();
+        return r.top < innerHeight && r.bottom > 0 && Number(getComputedStyle(el).opacity) < 0.9;
+      }).length;
+    });
+    expect(hidden).toBe(0);
+  });
+
+  test("public reduced motion hides nothing", async ({ browser }) => {
+    const ctx = await browser.newContext({ reducedMotion: "reduce" });
+    const page = await ctx.newPage();
+    await page.goto("/tournaments");
+    const transparent = await page.evaluate(() => {
+      const els = [...document.querySelectorAll<HTMLElement>(".rise, .rule, a[href^='/t/']")];
+      return els.filter((el) => Number(getComputedStyle(el).opacity) < 0.9).length;
+    });
+    expect(transparent).toBe(0);
+    await ctx.close();
+  });
+});

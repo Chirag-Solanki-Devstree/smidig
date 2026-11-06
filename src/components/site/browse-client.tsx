@@ -160,9 +160,12 @@ export function BrowseClient() {
                 key={t.id}
                 layout
                 initial={{ opacity: 0, y: 22, scale: 0.98 }}
-                animate={{ opacity: 1, y: 0, scale: 1 }}
+                // whileInView, not animate: a long result list would otherwise
+                // play every card's entrance at once, far below the fold.
+                whileInView={{ opacity: 1, y: 0, scale: 1 }}
+                viewport={{ once: true, amount: 0.15 }}
                 exit={{ opacity: 0, scale: 0.96 }}
-                transition={{ duration: 0.45, delay: i * 0.04, ease: [0.22, 1, 0.36, 1] }}
+                transition={{ duration: 0.45, delay: (i % 3) * 0.06, ease: [0.22, 1, 0.36, 1] }}
               >
                 <TournamentCard t={t} />
               </motion.div>

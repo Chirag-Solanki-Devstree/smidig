@@ -344,6 +344,16 @@
     transform: none;
   }
 
+  /* A section's rule draws itself out when the heading is reached. */
+  .js .rule {
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 620ms var(--ease-out);
+  }
+  .rule.in {
+    transform: scaleX(1);
+  }
+
   /* Draws an SVG path on once the card is seen. */
   .js .draw {
     stroke-dasharray: var(--len, 300);
@@ -415,11 +425,13 @@
   }
   .rise,
   .rise-stagger > *,
+  .rule,
   .draw {
     opacity: 1 !important;
     transform: none !important;
     transition: none !important;
     stroke-dashoffset: 0 !important;
+    transform: none !important;
   }
   .flip {
     transition: none !important;

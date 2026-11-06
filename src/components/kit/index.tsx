@@ -426,6 +426,22 @@ export function Button({
   );
 }
 
+/** The short accent rule above a section title. Draws out when reached. */
+export function Rule({ className }: { className?: string }) {
+  const { ref, seen } = useInViewOnce<HTMLSpanElement>({ amount: 0.5 });
+  return (
+    <span
+      ref={ref}
+      aria-hidden
+      className={cx(
+        "rule block h-px w-8 bg-[linear-gradient(90deg,var(--accent),transparent)]",
+        seen && "in",
+        className,
+      )}
+    />
+  );
+}
+
 export function SectionHeading({
   eyebrow,
   title,
@@ -442,7 +458,7 @@ export function SectionHeading({
       <div>
         {eyebrow ? (
           <span className="inline-flex items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.22em] text-fg-subtle">
-            <span className="h-px w-7 bg-[linear-gradient(90deg,transparent,var(--accent))]" />
+            <Rule className="w-7" />
             {eyebrow}
           </span>
         ) : null}

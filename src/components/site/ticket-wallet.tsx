@@ -29,8 +29,9 @@ export function TicketWallet() {
               <motion.div
                 key={t.id}
                 initial={{ opacity: 0, y: 22 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: i * 0.08, duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true, amount: 0.25 }}
+                transition={{ delay: (i % 3) * 0.07, duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
               >
                 {/* perforated ticket: notches cut either side of the stub */}
                 <Card className="group relative overflow-hidden transition-[transform,border-color] duration-[var(--dur)] ease-[var(--ease-out)] hover:-translate-y-1 hover:border-line-strong">

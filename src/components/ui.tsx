@@ -1,4 +1,7 @@
+"use client";
+
 import type { ComponentProps, ReactNode } from "react";
+import { Rule } from "@/components/kit";
 import { cx } from "@/lib/cx";
 
 /** Label that swaps itself out upward on hover of the button or any parent link. */
@@ -62,7 +65,7 @@ export function Pill({ children }: { children: ReactNode }) {
 export function SectionLabel({ children }: { children: ReactNode }) {
   return (
     <span className="inline-flex items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.22em] text-fg-subtle">
-      <span className="h-px w-8 bg-[linear-gradient(90deg,transparent,var(--accent))]" />
+      <Rule />
       {children}
     </span>
   );
