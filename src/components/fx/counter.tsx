@@ -1,14 +1,7 @@
 "use client";
 
 import { useEffect, useRef } from "react";
-import {
-  motion,
-  useInView,
-  useMotionValue,
-  useReducedMotion,
-  useTransform,
-  animate,
-} from "motion/react";
+import { motion, useMotionValue, useTransform, animate } from "motion/react";
 
 /**
  * Counts up the first time it enters view.
@@ -29,9 +22,6 @@ export function Counter({
   duration?: number;
 }) {
   const ref = useRef<HTMLSpanElement>(null);
-  const inView = useInView(ref, { once: true, amount: 0.6 });
-  const reduce = useReducedMotion();
-
   const raw = useMotionValue(0);
   const text = useTransform(raw, (v) => {
     const n = v.toFixed(decimals);
@@ -40,18 +30,34 @@ export function Counter({
     return `${prefix}${frac ? `${grouped}.${frac}` : grouped}${suffix}`;
   });
 
+  // Driven by an observer rather than React state: a page full of these
+  // would otherwise re-render every counter in the frame they come into
+  // view, which is exactly when there is least budget.
   useEffect(() => {
-    if (!inView) return;
-    if (reduce) {
+    const el = ref.current;
+    if (!el) return;
+
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
       raw.set(value);
       return;
     }
-    const controls = animate(raw, value, {
-      duration,
-      ease: [0.16, 1, 0.3, 1],
-    });
-    return () => controls.stop();
-  }, [inView, value, duration, reduce, raw]);
+
+    let controls: { stop: () => void } | null = null;
+    const io = new IntersectionObserver(
+      ([entry]) => {
+        if (!entry.isIntersecting) return;
+        io.disconnect();
+        controls = animate(raw, value, { duration, ease: [0.16, 1, 0.3, 1] });
+      },
+      { threshold: 0.6 },
+    );
+    io.observe(el);
+
+    return () => {
+      io.disconnect();
+      controls?.stop();
+    };
+  }, [value, duration, raw]);
 
   return (
     <span ref={ref} className="tabular-nums">

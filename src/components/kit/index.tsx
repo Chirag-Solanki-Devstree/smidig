@@ -3,7 +3,7 @@
 import Link from "next/link";
 import type { ComponentProps, ReactNode } from "react";
 import { Counter } from "@/components/fx/counter";
-import { useInViewOnce } from "@/components/fx/in-view";
+import { useRevealOnce } from "@/components/fx/in-view";
 import { cx } from "@/lib/cx";
 
 /* ------------------------------------------------------------- primitives */
@@ -24,7 +24,7 @@ export function Card({ className, children, ...rest }: ComponentProps<"div">) {
 
 /** Tiny trend line. Drawn once when the card is scrolled to. */
 function Sparkline({ points, up }: { points: number[]; up: boolean }) {
-  const { ref, seen } = useInViewOnce<SVGSVGElement>();
+  const ref = useRevealOnce<SVGPathElement>();
   if (points.length < 2) return null;
 
   const w = 88;
@@ -46,7 +46,6 @@ function Sparkline({ points, up }: { points: number[]; up: boolean }) {
 
   return (
     <svg
-      ref={ref}
       width={w}
       height={h}
       viewBox={`0 0 ${w} ${h}`}
@@ -54,15 +53,14 @@ function Sparkline({ points, up }: { points: number[]; up: boolean }) {
       className="overflow-visible"
     >
       <path
+        ref={ref}
         d={d}
         fill="none"
         stroke={colour}
         strokeWidth="1.6"
         strokeLinecap="round"
         strokeLinejoin="round"
-        className={cx("draw", seen && "in")}
-        // Rough path length: enough for the dash trick, no measuring needed.
-        style={{ ["--len" as string]: w * 1.6 }}
+        className="draw"
       />
     </svg>
   );
@@ -356,9 +354,9 @@ export function Td({
 export function Tbody({ children }: { children: ReactNode }) {
   // Hold the cascade until the table is actually in view, so rows further
   // down the page do not play their entrance before anyone sees them.
-  const { ref, seen } = useInViewOnce<HTMLTableSectionElement>({ amount: 0.02 });
+  const ref = useRevealOnce<HTMLTableSectionElement>({ amount: 0.02 });
   return (
-    <tbody ref={ref} className={cx("rows-cascade", seen && "in")}>
+    <tbody ref={ref} className="rows-cascade">
       {children}
     </tbody>
   );
@@ -428,14 +426,13 @@ export function Button({
 
 /** The short accent rule above a section title. Draws out when reached. */
 export function Rule({ className }: { className?: string }) {
-  const { ref, seen } = useInViewOnce<HTMLSpanElement>({ amount: 0.5 });
+  const ref = useRevealOnce<HTMLSpanElement>({ amount: 0.5 });
   return (
     <span
       ref={ref}
       aria-hidden
       className={cx(
         "rule block h-px w-8 bg-[linear-gradient(90deg,var(--accent),transparent)]",
-        seen && "in",
         className,
       )}
     />

@@ -354,14 +354,21 @@
     transform: scaleX(1);
   }
 
-  /* Draws an SVG path on once the card is seen. */
+  /* Sparkline arrival.
+     This used to animate stroke-dashoffset, which reads beautifully but is a
+     paint property: every frame repainted the SVG, and with several on screen
+     plus a chart it cost a 66ms frame on a throttled machine while scrolling.
+     Opacity and a short slide are composited instead. */
   .js .draw {
-    stroke-dasharray: var(--len, 300);
-    stroke-dashoffset: var(--len, 300);
-    transition: stroke-dashoffset 900ms var(--ease-out);
+    opacity: 0;
+    transform: translate3d(-6px, 0, 0);
+    transition:
+      opacity 520ms var(--ease-out),
+      transform 520ms var(--ease-out);
   }
   .draw.in {
-    stroke-dashoffset: 0;
+    opacity: 1;
+    transform: none;
   }
 
   /* Data-table rows arrive in a short cascade. CSS-only so server-rendered

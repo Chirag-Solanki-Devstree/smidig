@@ -1,8 +1,8 @@
 "use client";
 
 import type { ReactNode } from "react";
-import { Children, isValidElement, cloneElement } from "react";
-import { useInViewOnce } from "@/components/fx/in-view";
+import { Children, cloneElement, isValidElement } from "react";
+import { useRevealOnce } from "@/components/fx/in-view";
 import { cx } from "@/lib/cx";
 
 /** Lifts a block into place the first time it is scrolled to. */
@@ -15,9 +15,9 @@ export function Rise({
   className?: string;
   as?: "div" | "section";
 }) {
-  const { ref, seen } = useInViewOnce<HTMLDivElement>();
+  const ref = useRevealOnce<HTMLDivElement>();
   return (
-    <Tag ref={ref} className={cx("rise", seen && "in", className)}>
+    <Tag ref={ref} className={cx("rise", className)}>
       {children}
     </Tag>
   );
@@ -34,9 +34,9 @@ export function RiseStagger({
   children: ReactNode;
   className?: string;
 }) {
-  const { ref, seen } = useInViewOnce<HTMLDivElement>();
+  const ref = useRevealOnce<HTMLDivElement>();
   return (
-    <div ref={ref} className={cx("rise-stagger", seen && "in", className)}>
+    <div ref={ref} className={cx("rise-stagger", className)}>
       {Children.map(children, (child, i) =>
         isValidElement<{ style?: React.CSSProperties }>(child)
           ? cloneElement(child, {
